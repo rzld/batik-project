@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <vector>
 #include <GL\glew.h>
 #include <GL\freeglut.h>
 #include <GL\GL.h>
@@ -18,7 +19,30 @@ using namespace glm;
 //	{-4.0, -3.0, 0.0}, {0.0, 0.0, 0.0},
 //	{4.0, -3.0, 0.0}};
 
-GLfloat ctrlPoints[3][3];
+//Global variables
+vector<vec3> startPoint, midPoint, endPoint;
+int iterations;
+
+//Functions
+void init(void);
+void display(void);
+void reshape(int w, int h);
+vec3 findEndPoint(vec3 point, float offset);
+vec3 findMidPoints(vec3 start, vec3 end, float offset);
+
+//Main functions
+int main(int argc, char** argv) {
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutInitWindowSize(500, 500);                    // window size
+	glutInitWindowPosition(100, 100);                // distance from the top-left screen
+	glutCreateWindow("Test");    // message displayed on top bar window
+	init();
+	glutDisplayFunc(display);
+	glutReshapeFunc(reshape);
+	glutMainLoop();
+	return 0;
+}
 
 void init(void) {
 	glClearColor(1.0, 1.0, 1.0, 0.0);
@@ -28,72 +52,64 @@ void init(void) {
 }
 
 void display(void) {
-	//Control points
-	double	Ax = -4.0, Ay = 0.0, Az = 0.0,
-			Bx = 0.0, By = 3.0, Bz = 0.0,
-			Cx = 4.0, Cy = 0.0, Cz = 0.0;
+	//number of curve iterations
+	iterations = 2;
+	float offset = 3.0;
 
-	//Points on curve
-	double x, y, z;
-
-	//variable
-	double a = 1.0;
-	double b = 1.0 - a;
+	startPoint.resize(iterations);
+	midPoint.resize(iterations);
+	endPoint.resize(iterations);
 
 	//number of points
 	int nPoints = 50;
+
+	//Initial control points
+	startPoint[0] = vec3(-4.0, 0.0, 0.0);								//A
+	endPoint[0] = vec3(4.0, 0.0, 0.0);									//C
+	midPoint[0] = findMidPoints(startPoint[0], endPoint[0], offset);		//B
+
+	//Points on curve
+	double x, y, z;
 
 	glClear(GL_COLOR_BUFFER_BIT);
 	glColor3f(0.0, 0.0, 0.0);
 
 	glBegin(GL_LINE_STRIP);
 
-	//find the points in the curve and draw
-	for (int i = 0; i <= nPoints; i++) {
-		//get the points
-		x = Ax*a*a + Bx * 2 * a*b + Cx*b*b;
-		y = Ay*a*a + By * 2 * a*b + Cy*b*b;
-		z = Az*a*a + Bz * 2 * a*b + Cz*b*b;
+	for (int j = 0; j < iterations; j++) {
+		//variable
+		double a = 1.0;
+		double b = 1.0 - a;
 
-		//cout << x << ", " << y << ", " << z << endl;
+		if (j > 0) {
+			//set the next points
+			startPoint[j] = endPoint[j - 1];
+			endPoint[j] = findEndPoint(startPoint[j - 1], 2.0);
+			midPoint[j] = findMidPoints(startPoint[j], endPoint[j], -offset);
+		}
 
-		//draw
-		glVertex3d(x, y, z);
+		//find the points in the curve and draw
+		for (int i = 0; i <= nPoints; i++) {
+			//get the points of bezier curve
+			x = startPoint[j].x*a*a + midPoint[j].x * 2 * a*b + endPoint[j].x*b*b;
+			y = startPoint[j].y*a*a + midPoint[j].y * 2 * a*b + endPoint[j].y*b*b;
+			z = startPoint[j].z*a*a + midPoint[j].z * 2 * a*b + endPoint[j].z*b*b;
 
-		//change variable
-		a -= 1.0 / nPoints;
-		b = 1.0 - a;
+			//cout << x << ", " << y << ", " << z << endl;
+
+			//draw
+			glVertex3d(x, y, z);
+
+			//change variable
+			a -= 1.0 / nPoints;
+			b = 1.0 - a;
+		}
 	}
 
 	glEnd();
 	glFlush();
 
-	/* WITH EVALUATORS */
-	//GLfloat startPoint[3] = { -4.0, -3.0, 0.0 };
-	//GLfloat midPoint[3] = { 0.0, 0.0, 0.0 };
-	//GLfloat endPoint[3] = { 4.0, -3.0, 0.0 };
-
-	////bezier curve using evaluators
-	//glClear(GL_COLOR_BUFFER_BIT);
-	//glColor3f(1.0, 1.0, 1.0);
-	//glBegin(GL_LINE_STRIP);
-	//for (int i = 0; i <= 50; i++) {
-	//	glEvalCoord1f((GLfloat)i / 50.0);
-	//}
-	//glEnd();
-
-	////displays control points as dots
-	//glPointSize(5.0);
-	//glColor3f(1.0, 1.0, 0.0);
-	//glBegin(GL_POINTS);
-	//for (int i = 0; i < 3; i++) {
-	//	glVertex3fv(&ctrlPoints[i][0]);
-	//}
-	//glEnd();
-
-	//glFlush();
-
-	/* ORIGINAL */
+	/* TEST */
 	//glClear(GL_COLOR_BUFFER_BIT);
 	//glBegin(GL_POLYGON);
 	//glVertex2f(0.0, 0.0);                    // bottom left
@@ -123,15 +139,20 @@ void reshape(int w, int h) {
 	glLoadIdentity();
 }
 
-int main(int argc, char** argv) {
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-	glutInitWindowSize(500, 500);                    // window size
-	glutInitWindowPosition(100, 100);                // distance from the top-left screen
-	glutCreateWindow("Test");    // message displayed on top bar window
-	init();
-	glutDisplayFunc(display);
-	glutReshapeFunc(reshape);
-	glutMainLoop();
-	return 0;
+vec3 findEndPoint(vec3 point, float offset) {
+	float x = point.x - offset;
+	float y = point.y;
+	float z = point.z;
+
+	vec3 end(x, y, z);
+	return end;
+}
+
+vec3 findMidPoints(vec3 start, vec3 end, float offset) {
+	float x = (start.x + end.x) / 2;
+	float y = ((start.y + end.y) / 2) + offset;
+	float z = (start.z + end.z) / 2;
+
+	vec3 mid(x, y, z);
+	return mid;
 }

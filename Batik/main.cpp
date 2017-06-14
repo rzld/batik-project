@@ -19,8 +19,16 @@ using namespace glm;
 //	{-4.0, -3.0, 0.0}, {0.0, 0.0, 0.0},
 //	{4.0, -3.0, 0.0}};
 
+struct curvePoints {
+	vec3 start;
+	vec3 mid;
+	vec3 end;
+};
+
 //Global variables
+vector<vector<curvePoints>> curvePts;
 vector<vec3> startPoint, midPoint, endPoint;
+vector<vector<vec3>> points;
 int iterations;
 
 //Functions
@@ -29,6 +37,7 @@ void display(void);
 void reshape(int w, int h);
 vec3 findEndPoint(vec3 point, float offset);
 vec3 findMidPoints(vec3 start, vec3 end, float offset);
+vec3 getBezier(curvePoints points, double a, double b);
 
 //Main functions
 int main(int argc, char** argv) {
@@ -52,24 +61,33 @@ void init(void) {
 }
 
 void display(void) {
-	//number of curve iterations
-	iterations = 2;
-	float offset = 3.0;
+	iterations = 4;			//number of curve iterations
+	float offset = 1.0;		//offset for midpoints - Y distance from centre
+	int nPoints = 50;		//number of points
+	int div;
+	vec3 bezierResults;
 
+	//resize start, mid, and end points
 	startPoint.resize(iterations);
 	midPoint.resize(iterations);
 	endPoint.resize(iterations);
-
-	//number of points
-	int nPoints = 50;
 
 	//Initial control points
 	startPoint[0] = vec3(-4.0, 0.0, 0.0);								//A
 	endPoint[0] = vec3(4.0, 0.0, 0.0);									//C
 	midPoint[0] = findMidPoints(startPoint[0], endPoint[0], offset);		//B
 
+	//resize points - this is a matrix of points for each iterations
+	points.resize(iterations);
+	for (int p = 0; p < (int)points.size(); p++) {
+		points[p].resize(nPoints);
+	}
+
+	curvePts.resize(iterations);
+
 	//Points on curve
-	double x, y, z;
+	double xx, yy, zz;
+	curvePoints curve_temp;
 
 	glClear(GL_COLOR_BUFFER_BIT);
 	glColor3f(0.0, 0.0, 0.0);
@@ -78,46 +96,101 @@ void display(void) {
 
 	for (int j = 0; j < iterations; j++) {
 		//variable
-		double a = 1.0;
-		double b = 1.0 - a;
+		double a, b, c, d;
+		a = 1.0;
+		b = 1.0 - a;
+		div = j + 3;
 
+		curvePts[j].resize(div);
+		
+		//find mid points
 		if (j > 0) {
-			//set the next points
-			startPoint[j] = endPoint[j - 1];
-			endPoint[j] = findEndPoint(startPoint[j - 1], 2.0);
-			midPoint[j] = findMidPoints(startPoint[j], endPoint[j], -offset);
+			if (j % 2 == 0) {
+				//upwards curve
+				//set the next points
+				startPoint[j] = endPoint[j - 1];
+				endPoint[j] = findEndPoint(startPoint[j - 1], -2.0);
+				midPoint[j] = findMidPoints(startPoint[j], endPoint[j], offset * (j+1));
+			}
+			else {
+				//downwards curve
+				//set the next points
+				startPoint[j] = endPoint[j - 1];
+				endPoint[j] = findEndPoint(startPoint[j - 1], 2.0);
+				midPoint[j] = findMidPoints(startPoint[j], endPoint[j], -offset * (j+1));
+			}
 		}
 
 		//find the points in the curve and draw
-		for (int i = 0; i <= nPoints; i++) {
+		for (int i = 0; i < nPoints; i++) {
+			//cout << i << endl;
 			//get the points of bezier curve
-			x = startPoint[j].x*a*a + midPoint[j].x * 2 * a*b + endPoint[j].x*b*b;
-			y = startPoint[j].y*a*a + midPoint[j].y * 2 * a*b + endPoint[j].y*b*b;
-			z = startPoint[j].z*a*a + midPoint[j].z * 2 * a*b + endPoint[j].z*b*b;
+			curve_temp.start = startPoint[j];
+			curve_temp.mid = midPoint[j];
+			curve_temp.end = endPoint[j];
+			/*xx = startPoint[j].x*a*a + midPoint[j].x * 2 * a*b + endPoint[j].x*b*b;
+			yy = startPoint[j].y*a*a + midPoint[j].y * 2 * a*b + endPoint[j].y*b*b;
+			zz = startPoint[j].z*a*a + midPoint[j].z * 2 * a*b + endPoint[j].z*b*b;
+			points[j][i] += vec3(xx, yy, zz);*/
 
-			//cout << x << ", " << y << ", " << z << endl;
+			bezierResults = getBezier(curve_temp, a, b);
+			points[j][i] += bezierResults;
+
+			//cout << points[j][i].x << " " << points[j][i].y << " " << points[j][i].z << endl;
 
 			//draw
-			glVertex3d(x, y, z);
+			//glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
 
 			//change variable
 			a -= 1.0 / nPoints;
 			b = 1.0 - a;
 		}
+
+		int k_ = 0;
+		float offset2;
+
+		for (int k = 0; k < div; k++) {
+			c = 1.0;
+			d = 1.0 - c;
+			//find points from the big curve to become new start & end points of new curves
+			int nextPt = (int)(nPoints * (k + 1) / div) - 1;
+			cout << j << " " << k_ << endl;
+			cout << nextPt << endl;
+			curvePts[j][k].start = points[j][k_];
+			curvePts[j][k].end = points[j][nextPt];
+
+			k_ = nextPt;
+			
+			//find mid points of each curve
+			if (k % 2 == 0) {
+				offset2 = 0.5;
+			}
+			else {
+				offset2 = -0.5;
+			}
+			curvePts[j][k].mid = findMidPoints(curvePts[j][k].start, curvePts[j][k].end, offset2);
+
+			//find points of each new curve
+			//loop through number of points, count x y z
+			for (int m = 0; m < nPoints; m++) {
+				curve_temp.start = curvePts[j][k].start;
+				curve_temp.mid = curvePts[j][k].mid;
+				curve_temp.end = curvePts[j][k].end;
+
+				bezierResults = getBezier(curve_temp, c, d);
+
+				//draw
+				glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+
+				//change variables
+				c -= 1.0 / nPoints;
+				d = 1.0 - c;
+			}
+		}
 	}
 
 	glEnd();
 	glFlush();
-
-	/* TEST */
-	//glClear(GL_COLOR_BUFFER_BIT);
-	//glBegin(GL_POLYGON);
-	//glVertex2f(0.0, 0.0);                    // bottom left
-	//glVertex2f(0.5, 0.0);                    // bottom right
-	//glVertex2f(0.5, 0.5);                    // top right
-	//glVertex2f(0.0, 0.5);                    // top left
-	//glEnd();
-	//glFlush();
 }
 
 void reshape(int w, int h) {
@@ -125,7 +198,7 @@ void reshape(int w, int h) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	float edge = 8.0;
+	float edge = 10.0;
 
 	if (w <= h) {
 		glOrtho(-edge, edge, -edge*(GLfloat)h / (GLfloat)w,
@@ -155,4 +228,16 @@ vec3 findMidPoints(vec3 start, vec3 end, float offset) {
 
 	vec3 mid(x, y, z);
 	return mid;
+}
+
+vec3 getBezier(curvePoints points, double a, double b) {
+	vec3 start = points.start;
+	vec3 mid = points.mid;
+	vec3 end = points.end;
+
+	float xx = start.x*a*a + mid.x * 2 * a*b + end.x*b*b;
+	float yy = start.y*a*a + mid.y * 2 * a*b + end.y*b*b;
+	float zz = start.z*a*a + mid.z * 2 * a*b + end.z*b*b;
+
+	return vec3(xx, yy, zz);
 }

@@ -1,3 +1,9 @@
 ﻿  main.cpp
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(89): warning C4101: 'yy': unreferenced local variable
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(89): warning C4101: 'xx': unreferenced local variable
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(89): warning C4101: 'zz': unreferenced local variable
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(238): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(239): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(240): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
   Batik.vcxproj -> D:\- Bristol -\- University -\Projects\Batik\Debug\Batik.exe
   Batik.vcxproj -> D:\- Bristol -\- University -\Projects\Batik\Debug\Batik.pdb (Partial PDB)

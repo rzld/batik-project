@@ -38,6 +38,7 @@ void reshape(int w, int h);
 vec3 findEndPoint(vec3 point, float offset);
 vec3 findMidPoints(vec3 start, vec3 end, float offset);
 vec3 getBezier(curvePoints points, double a, double b);
+void drawLittleSpiral(double a, double b);
 
 //Main functions
 int main(int argc, char** argv) {
@@ -61,11 +62,12 @@ void init(void) {
 }
 
 void display(void) {
-	iterations = 5;			//number of curve iterations
+	iterations = 4;			//number of curve iterations
 	float offset = 1.0;		//offset for midpoints - Y distance from centre
 	int nPoints = 50;		//number of points
 	int div;
 	vec3 bezierResults;
+	vec3 finalPoint;
 
 	//resize start, mid, and end points
 	startPoint.resize(iterations);
@@ -92,7 +94,7 @@ void display(void) {
 
 	glClear(GL_COLOR_BUFFER_BIT);
 	glColor3f(0.0, 0.0, 0.0);
-
+	//drawLittleSpiral(0.5, 0.5);
 	glBegin(GL_LINE_STRIP);
 
 	for (int j = 0; j < iterations; j++) {
@@ -123,6 +125,7 @@ void display(void) {
 		}
 
 		//find the points in the curve and draw
+		//bigger curve
 		for (int i = 0; i < nPoints; i++) {
 			//cout << i << endl;
 			//get the points of bezier curve
@@ -145,12 +148,13 @@ void display(void) {
 
 		if (j == iterations - 1) {
 			div = div / 2 - 1;
-			points[j].erase(points[j].begin() + (nPoints / 2 + 3), points[j].begin() + nPoints);
+			points[j].erase(points[j].begin() + (nPoints / 2), points[j].begin() + nPoints);
 		}
 
 		a = 1.0;
 		b = 1.0 - a;
 
+		//add extra curve for the centre part
 		if (j == 0) {
 			for (int i = 0; i < nPoints; i++) {
 				//cout << i << endl;
@@ -211,6 +215,27 @@ void display(void) {
 				//change variables
 				c -= 1.0 / nPoints;
 				d = 1.0 - c;
+
+				/*if (j == iterations - 1 && k == div - 1) {
+
+				}*/
+			}
+
+			//draw inwards spiral from final point
+			if (j == iterations - 1 && k == div - 1) {
+				//spiral
+				vec3 spirStart, spirEnd, spirMid;
+				spirStart = vec3(points[j][points[j].size() - 1].x, points[j][points[j].size() - 1].y, 0.0);
+				spirEnd = vec3(points[j][points[j].size() - 1].x, points[j][points[j].size() - 1].y + 0.6, 0.0);
+				spirMid = findMidPoints(spirStart, spirEnd, 0.2);
+
+				//get bezier
+
+				//do one more time for smaller circle
+
+				glVertex3d(spirStart.x, spirStart.y, 0.0);
+				glVertex3d(spirEnd.x, spirEnd.y, 0.0);
+				//cout << points[j][k].x << " " << points[j][k].y << endl;
 			}
 		}
 
@@ -268,4 +293,28 @@ vec3 getBezier(curvePoints points, double a, double b) {
 	float zz = start.z*a*a + mid.z * 2 * a*b + end.z*b*b;
 
 	return vec3(xx, yy, zz);
+}
+
+void drawLittleSpiral(double a, double b) {
+	//http://techtutorials95.blogspot.co.uk/2015/05/opengl-making-spirals.html
+
+	double x, y, xx, yy;
+	double theta = 0.0;
+	
+	x = a * exp(b * theta) * cos(theta);
+	y = a * exp(b * theta) * sin(theta);
+
+	for (int i = 0; i < 100; i++) {
+		glBegin(GL_LINES);
+		theta = 0.025 * i;
+		xx = a * exp(b * theta) * cos(theta);
+		yy = a * exp(b * theta) * sin(theta);
+
+		glVertex2f((GLfloat)x, (GLfloat)y);
+		glVertex2f(xx, yy);
+
+		x = a * exp(b * theta) * cos(theta);
+		y = a * exp(b * theta) * sin(theta);
+		glEnd();
+	}
 }

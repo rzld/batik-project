@@ -37,6 +37,7 @@ void display(void);
 void reshape(int w, int h);
 vec3 findEndPoint(vec3 point, float offset);
 vec3 findMidPoints(vec3 start, vec3 end, float offset);
+vec3 findMidXPoints(vec3 start, vec3 end, float offset);
 vec3 getBezier(curvePoints points, double a, double b);
 void drawLittleSpiral(double a, double b);
 
@@ -62,7 +63,7 @@ void init(void) {
 }
 
 void display(void) {
-	iterations = 4;			//number of curve iterations
+	iterations = 5;			//number of curve iterations
 	float offset = 1.0;		//offset for midpoints - Y distance from centre
 	int nPoints = 50;		//number of points
 	int div;
@@ -156,13 +157,62 @@ void display(void) {
 
 		//add extra curve for the centre part
 		if (j == 0) {
-			for (int i = 0; i < nPoints; i++) {
-				//cout << i << endl;
-				//get the points of bezier curve
-				curve_temp.start = vec3(-0.1, -0.5, 0.0);
-				curve_temp.end = startPoint[j];
-				curve_temp.mid = findMidPoints(curve_temp.start, curve_temp.end, -0.5);
+			//spiral
+			double e = 1.0;
+			double f = 1.0 - e;
 
+			vec3 spirStart, spirEnd, spirMid;
+			//1
+			spirEnd = vec3(-0.1, 0.5, 0.0);
+			spirStart = vec3(-0.1, -0.2, 0.0);
+			spirMid = findMidXPoints(spirStart, spirEnd, -0.8);
+
+			curve_temp.start = spirStart;
+			curve_temp.mid = spirMid;
+			curve_temp.end = spirEnd;
+
+			//get bezier
+			for (int i = 0; i < 50; i++) {
+				bezierResults = getBezier(curve_temp, e, f);
+
+				//draw
+				glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+
+				//change variables
+				e -= 1.0 / nPoints;
+				f = 1.0 - e;
+			}
+
+			//2
+			e = 1.0;
+			f = 1.0 - e;
+			spirEnd = vec3(-0.1, -0.5, 0.0);
+			spirStart = vec3(-0.1, 0.5, 0.0);
+			spirMid = findMidXPoints(spirStart, spirEnd, 0.8);
+
+			curve_temp.start = spirStart;
+			curve_temp.mid = spirMid;
+			curve_temp.end = spirEnd;
+
+			//get bezier
+			for (int i = 0; i < 50; i++) {
+				bezierResults = getBezier(curve_temp, e, f);
+
+				//draw
+				glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+
+				//change variables
+				e -= 1.0 / nPoints;
+				f = 1.0 - e;
+			}
+
+			//curve
+			curve_temp.start = spirEnd;
+			curve_temp.end = startPoint[j];
+			curve_temp.mid = findMidPoints(curve_temp.start, curve_temp.end, -0.5);
+			
+			for (int i = 0; i < nPoints; i++) {
+				//get the points of bezier curve
 				bezierResults = getBezier(curve_temp, a, b);
 				//points[j][i] += bezierResults;
 
@@ -173,6 +223,8 @@ void display(void) {
 				a -= 1.0 / nPoints;
 				b = 1.0 - a;
 			}
+
+			
 		}
 
 		int k_ = 0;
@@ -215,26 +267,84 @@ void display(void) {
 				//change variables
 				c -= 1.0 / nPoints;
 				d = 1.0 - c;
-
-				/*if (j == iterations - 1 && k == div - 1) {
-
-				}*/
 			}
 
 			//draw inwards spiral from final point
 			if (j == iterations - 1 && k == div - 1) {
+				double e = 1.0;
+				double f = 1.0 - e;
+				double endY1, endY2, offset3, offset4;
+
+				if (iterations % 2 == 0) {
+					endY1 = 0.8;
+					endY2 = -0.6;
+					offset3 = -0.6;
+					offset4 = 0.8;
+				}
+				else {
+					endY1 = -0.8;
+					endY2 = 0.6;
+					offset3 = 0.6;
+					offset4 = -0.8;
+				}
+
 				//spiral
 				vec3 spirStart, spirEnd, spirMid;
 				spirStart = vec3(points[j][points[j].size() - 1].x, points[j][points[j].size() - 1].y, 0.0);
-				spirEnd = vec3(points[j][points[j].size() - 1].x, points[j][points[j].size() - 1].y + 0.6, 0.0);
-				spirMid = findMidPoints(spirStart, spirEnd, 0.2);
+				spirEnd = vec3(points[j][points[j].size() - 1].x, points[j][points[j].size() - 1].y + endY1, 0.0);
+				spirMid = findMidXPoints(spirStart, spirEnd, offset3);
+
+				curve_temp.start = spirStart;
+				curve_temp.mid = spirMid;
+				curve_temp.end = spirEnd;
 
 				//get bezier
+				for (int i = 0; i < 50; i++) {
+					/*curve_temp.start = spirStart;
+					curve_temp.mid = spirMid;
+					curve_temp.end = spirEnd;*/
+
+					bezierResults = getBezier(curve_temp, e, f);
+
+					//draw
+					glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+
+					//change variables
+					e -= 1.0 / nPoints;
+					f = 1.0 - e;
+				}
 
 				//do one more time for smaller circle
+				spirStart = spirEnd;
+				spirEnd = vec3(spirStart.x, spirStart.y + endY2, 0.0);
+				spirMid = findMidXPoints(spirStart, spirEnd, offset4);
 
-				glVertex3d(spirStart.x, spirStart.y, 0.0);
-				glVertex3d(spirEnd.x, spirEnd.y, 0.0);
+				e = 1.0;
+				f = 1.0 - e;
+
+				curve_temp.start = spirStart;
+				curve_temp.mid = spirMid;
+				curve_temp.end = spirEnd;
+
+				//get bezier
+				for (int i = 0; i < 50; i++) {
+					/*curve_temp.start = spirStart;
+					curve_temp.mid = spirMid;
+					curve_temp.end = spirEnd;*/
+
+					bezierResults = getBezier(curve_temp, e, f);
+
+					//draw
+					glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+
+					//change variables
+					e -= 1.0 / nPoints;
+					f = 1.0 - e;
+				}
+
+				/*glVertex3d(spirStart.x, spirStart.y, 0.0);
+				glVertex3d(spirMid.x, spirMid.y, 0.0);
+				glVertex3d(spirEnd.x, spirEnd.y, 0.0);*/
 				//cout << points[j][k].x << " " << points[j][k].y << endl;
 			}
 		}
@@ -243,6 +353,7 @@ void display(void) {
 	}
 
 	glEnd();
+	//drawLittleSpiral(0.5, 0.5);
 	glFlush();
 }
 
@@ -283,6 +394,15 @@ vec3 findMidPoints(vec3 start, vec3 end, float offset) {
 	return mid;
 }
 
+vec3 findMidXPoints(vec3 start, vec3 end, float offset) {
+	float x = ((start.x + end.x) / 2) + offset;
+	float y = (start.y + end.y) / 2;
+	float z = (start.z + end.z) / 2;
+
+	vec3 mid(x, y, z);
+	return mid;
+}
+
 vec3 getBezier(curvePoints points, double a, double b) {
 	vec3 start = points.start;
 	vec3 mid = points.mid;
@@ -304,7 +424,7 @@ void drawLittleSpiral(double a, double b) {
 	x = a * exp(b * theta) * cos(theta);
 	y = a * exp(b * theta) * sin(theta);
 
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 150; i++) {
 		glBegin(GL_LINES);
 		theta = 0.025 * i;
 		xx = a * exp(b * theta) * cos(theta);

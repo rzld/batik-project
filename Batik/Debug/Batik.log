@@ -1,16 +1,18 @@
 ﻿  main.cpp
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(168): warning C4305: 'argument': truncation from 'double' to 'float'
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(191): warning C4305: 'argument': truncation from 'double' to 'float'
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(248): warning C4305: '=': truncation from 'double' to 'float'
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(251): warning C4305: '=': truncation from 'double' to 'float'
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(295): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(320): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(92): warning C4101: 'yy': unreferenced local variable
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(92): warning C4101: 'xx': unreferenced local variable
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(92): warning C4101: 'zz': unreferenced local variable
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(411): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(412): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(413): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(434): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(194): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(201): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(245): warning C4305: 'argument': truncation from 'double' to 'float'
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(268): warning C4305: 'argument': truncation from 'double' to 'float'
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(325): warning C4305: '=': truncation from 'double' to 'float'
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(328): warning C4305: '=': truncation from 'double' to 'float'
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(372): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(400): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(168): warning C4101: 'yy': unreferenced local variable
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(168): warning C4101: 'xx': unreferenced local variable
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(168): warning C4101: 'zz': unreferenced local variable
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(471): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(472): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(473): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(494): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
   Batik.vcxproj -> D:\- Bristol -\- University -\Projects\Batik\Debug\Batik.exe
   Batik.vcxproj -> D:\- Bristol -\- University -\Projects\Batik\Debug\Batik.pdb (Partial PDB)

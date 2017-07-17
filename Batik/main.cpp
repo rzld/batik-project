@@ -40,61 +40,138 @@ vec3 findMidPoints(vec3 start, vec3 end, float offset);
 vec3 findMidXPoints(vec3 start, vec3 end, float offset);
 vec3 getBezier(curvePoints points, double a, double b);
 void drawLittleSpiral(double a, double b);
+void drawCloud();
 
 //Main functions
 int main(int argc, char** argv) {
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize(500, 500);                    // window size
 	glutInitWindowPosition(100, 100);                // distance from the top-left screen
 	glutCreateWindow("Test");    // message displayed on top bar window
-	init();
+	//init();
 	glutDisplayFunc(display);
-	glutReshapeFunc(reshape);
+	//glutReshapeFunc(reshape);
 	glutMainLoop();
 	return 0;
 }
 
 void init(void) {
 	glClearColor(1.0, 1.0, 1.0, 0.0);
-	glShadeModel(GL_FLAT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//glShadeModel(GL_FLAT);
 	//glMap1f(GL_MAP1_VERTEX_3, 0.0, 1.0, 3, 3, &ctrlPoints[0][0]);
 	//glEnable(GL_MAP1_VERTEX_3);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	float edge = 15.0;
+	glOrtho(-edge, edge, -edge, edge, -edge, edge);
+	//if (w <= h) {
+	//	glOrtho(-edge, edge, -edge*(GLfloat)h / (GLfloat)w,
+	//		edge*(GLfloat)h / (GLfloat)w, -edge, edge);
+	//}
+	//else {
+	//	glOrtho(-edge*(GLfloat)h / (GLfloat)h,
+	//		edge*(GLfloat)w / (GLfloat)h, -edge, edge, -edge, edge);
+	//}
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
 
 void display(void) {
-	iterations = 5;			//number of curve iterations
-	float offset = 1.0;		//offset for midpoints - Y distance from centre
+	init();
+	//for (int c_ = 0; c_ < 3; c_++) {
+	//	glPushMatrix();
+	//	glTranslated(1.0, (GLdouble)(c_ + 2), 1.0);
+	//	glScaled((GLdouble)(1 / (c_ + 1)), (GLdouble)(1 / (c_ + 1)), 1.0);
+
+	//	//function
+	//	drawCloud();
+	//	glFlush();
+	//	glPopMatrix();
+	//}
+
+	glPushMatrix();
+	glTranslated(0.0, 3.0, 1.0);
+	drawCloud();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(0.0, -3.0, 1.0);
+	glScaled(1.0, -1.0, 1.0);
+	drawCloud();
+	glPopMatrix();
+
+	glutSwapBuffers();
+}
+
+void reshape(int w, int h) {
+	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	float edge = 20.0;
+
+	if (w <= h) {
+		glOrtho(-edge, edge, -edge*(GLfloat)h / (GLfloat)w,
+			edge*(GLfloat)h / (GLfloat)w, -edge, edge);
+	}
+	else {
+		glOrtho(-edge*(GLfloat)h / (GLfloat)h,
+			edge*(GLfloat)w / (GLfloat)h, -edge, edge, -edge, edge);
+	}
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	//scales the image
+	//use random numbers to create different types
+	//glScalef(0.5, 0.5, 1.0);
+}
+
+void drawCloud() {
+	iterations = 4;			//number of curve iterations
+	double offset = 1.0;		//offset for midpoints - Y distance from centre
 	int nPoints = 50;		//number of points
 	int div;
 	vec3 bezierResults;
 	vec3 finalPoint;
 
-	//resize start, mid, and end points
 	startPoint.resize(iterations);
 	midPoint.resize(iterations);
 	endPoint.resize(iterations);
+	points.resize(iterations);
+	for (int p = 0; p < (int)points.size(); p++) {
+		points[p].resize(nPoints);
+	}
+	curvePts.resize(iterations);
+
+	/*cout << "*" << c_ << endl;
+	cout << startPoint.size() << " " << midPoint.size() << " " << endPoint.size() << endl;
+	cout << points.size() << " " << curvePts.size() << endl;*/
 
 	//Initial control points
 	startPoint[0] = vec3(-4.0, 0.0, 0.0);								//A
 	endPoint[0] = vec3(4.0, 0.0, 0.0);									//C
 	midPoint[0] = findMidPoints(startPoint[0], endPoint[0], 2.0);		//B
 
-	//resize points - this is a matrix of points for each iterations
-	points.resize(iterations);
-	for (int p = 0; p < (int)points.size(); p++) {
-		points[p].resize(nPoints);
-	}
+	vec3 spiralEnd1(3.9, -0.5, 0.0);
+	vec3 spiralEnd2(3.9, 0.5, 0.0);
+	vec3 spiralEnd3(3.8, -0.2, 0.0);
 
-	curvePts.resize(iterations);
+	//resize points - this is a matrix of points for each iterations
 
 	//Points on curve
 	double xx, yy, zz;
 	curvePoints curve_temp;
 	div = 3;
 
-	glClear(GL_COLOR_BUFFER_BIT);
-	glColor3f(0.0, 0.0, 0.0);
+	//glClear(GL_COLOR_BUFFER_BIT);
+	glColor3d(0.0, 0.0, 0.0);
+	glLineWidth(1.5);
 	//drawLittleSpiral(0.5, 0.5);
 	glBegin(GL_LINE_STRIP);
 
@@ -106,7 +183,7 @@ void display(void) {
 		//div = j + 3;
 
 		curvePts[j].resize(div);
-		
+
 		//find mid points
 		if (j > 0) {
 			if (j % 2 == 0) {
@@ -114,19 +191,19 @@ void display(void) {
 				//set the next points
 				startPoint[j] = endPoint[j - 1];
 				endPoint[j] = findEndPoint(startPoint[j - 1], -2.0);
-				midPoint[j] = findMidPoints(startPoint[j], endPoint[j], offset * (j+2));
+				midPoint[j] = findMidPoints(startPoint[j], endPoint[j], offset * (j + 2));
 			}
 			else {
 				//downwards curve
 				//set the next points
 				startPoint[j] = endPoint[j - 1];
 				endPoint[j] = findEndPoint(startPoint[j - 1], 2.0);
-				midPoint[j] = findMidPoints(startPoint[j], endPoint[j], -offset * (j+2));
+				midPoint[j] = findMidPoints(startPoint[j], endPoint[j], -offset * (j + 2));
 			}
 		}
 
 		//find the points in the curve and draw
-		//bigger curve
+		//base curve
 		for (int i = 0; i < nPoints; i++) {
 			//cout << i << endl;
 			//get the points of bezier curve
@@ -135,7 +212,7 @@ void display(void) {
 			curve_temp.end = endPoint[j];
 
 			bezierResults = getBezier(curve_temp, a, b);
-			points[j][i] += bezierResults;
+			points[j][i] = bezierResults;
 
 			//cout << points[j][i].x << " " << points[j][i].y << " " << points[j][i].z << endl;
 
@@ -163,8 +240,8 @@ void display(void) {
 
 			vec3 spirStart, spirEnd, spirMid;
 			//1
-			spirEnd = vec3(-0.1, 0.5, 0.0);
-			spirStart = vec3(-0.1, -0.2, 0.0);
+			spirStart = startPoint[0] + spiralEnd3;			//spiralEnd3
+			spirEnd = startPoint[0] + spiralEnd2;				//sspiralEnd2
 			spirMid = findMidXPoints(spirStart, spirEnd, -0.8);
 
 			curve_temp.start = spirStart;
@@ -186,8 +263,8 @@ void display(void) {
 			//2
 			e = 1.0;
 			f = 1.0 - e;
-			spirEnd = vec3(-0.1, -0.5, 0.0);
-			spirStart = vec3(-0.1, 0.5, 0.0);
+			spirStart = startPoint[0] + spiralEnd2;			//spiralEnd2
+			spirEnd = startPoint[0] + spiralEnd1;			//spiralEnd1
 			spirMid = findMidXPoints(spirStart, spirEnd, 0.8);
 
 			curve_temp.start = spirStart;
@@ -210,7 +287,7 @@ void display(void) {
 			curve_temp.start = spirEnd;
 			curve_temp.end = startPoint[j];
 			curve_temp.mid = findMidPoints(curve_temp.start, curve_temp.end, -0.5);
-			
+
 			for (int i = 0; i < nPoints; i++) {
 				//get the points of bezier curve
 				bezierResults = getBezier(curve_temp, a, b);
@@ -224,7 +301,7 @@ void display(void) {
 				b = 1.0 - a;
 			}
 
-			
+
 		}
 
 		int k_ = 0;
@@ -242,7 +319,7 @@ void display(void) {
 			curvePts[j][k].end = points[j][nextPt];
 
 			k_ = nextPt;
-			
+
 			//find mid points of each curve
 			if (k % 2 == 0) {
 				offset2 = -0.4;
@@ -298,6 +375,9 @@ void display(void) {
 				curve_temp.mid = spirMid;
 				curve_temp.end = spirEnd;
 
+				cout << spirStart.x << " " << spirStart.y << " " << spirStart.z << endl;
+				cout << spirEnd.x << " " << spirEnd.y << " " << spirEnd.z << endl;
+
 				//get bezier
 				for (int i = 0; i < 50; i++) {
 					/*curve_temp.start = spirStart;
@@ -316,7 +396,7 @@ void display(void) {
 
 				//do one more time for smaller circle
 				spirStart = spirEnd;
-				spirEnd = vec3(spirStart.x, spirStart.y + endY2, 0.0);
+				spirEnd = vec3(spirStart.x + 0.1, spirStart.y + endY2, 0.0);
 				spirMid = findMidXPoints(spirStart, spirEnd, offset4);
 
 				e = 1.0;
@@ -353,27 +433,7 @@ void display(void) {
 	}
 
 	glEnd();
-	//drawLittleSpiral(0.5, 0.5);
 	glFlush();
-}
-
-void reshape(int w, int h) {
-	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	float edge = 10.0;
-
-	if (w <= h) {
-		glOrtho(-edge, edge, -edge*(GLfloat)h / (GLfloat)w,
-			edge*(GLfloat)h / (GLfloat)w, -edge, edge);
-	}
-	else {
-		glOrtho(-edge*(GLfloat)h / (GLfloat)h,
-			edge*(GLfloat)w / (GLfloat)h, -edge, edge, -edge, edge);
-	}
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
 }
 
 vec3 findEndPoint(vec3 point, float offset) {

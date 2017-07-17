@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
 }
 
 void init(void) {
-	glClearColor(1.0, 1.0, 1.0, 0.0);
+	glClearColor(0.0, 0.27, 0.51, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//glShadeModel(GL_FLAT);
@@ -66,7 +66,7 @@ void init(void) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	float edge = 15.0;
+	float edge = 20.0;
 	glOrtho(-edge, edge, -edge, edge, -edge, edge);
 	//if (w <= h) {
 	//	glOrtho(-edge, edge, -edge*(GLfloat)h / (GLfloat)w,
@@ -95,13 +95,80 @@ void display(void) {
 	//}
 
 	glPushMatrix();
-	glTranslated(0.0, 3.0, 1.0);
+	glTranslated(-20.0, 20.0, 0.0);
+	glScaled(-1.0, -1.0, 1.0);
 	drawCloud();
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslated(0.0, -3.0, 1.0);
-	glScaled(1.0, -1.0, 1.0);
+	glTranslated(0.0, 20.0, 0.0);
+	glScaled(1.5, -1.5, 1.0);
+	drawCloud();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(20.0, 20.0, 0.0);
+	glScaled(-1.0, -1.0, 1.0);
+	drawCloud();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(-10.0, 10.0, 0.0);
+	glScaled(-1.5, 1.5, 1.0);
+	drawCloud();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(10.0, 10.0, 1.0);
+	glScaled(1.5, 1.5, 1.0);
+	drawCloud();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(-20.0, 0.0, 0.0);
+	glScaled(-1.0, 1.0, 1.0);
+	drawCloud();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(0.0, 0.0, 0.0);
+	glScaled(1.5, 1.5, 1.0);
+	drawCloud();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(20.0, 0.0, 0.0);
+	glScaled(-1.0, 1.0, 1.0);
+	drawCloud();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(-10.0, -10.0, 1.0);
+	glScaled(-1.5, -1.5, 1.0);
+	drawCloud();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(10.0, -10.0, 1.0);
+	glScaled(1.5, -1.5, 1.0);
+	drawCloud();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(-20.0, -20.0, 1.0);
+	glScaled(-1.0, -1.0, 1.0);
+	drawCloud();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(0.0, -20.0, 1.0);
+	glScaled(1.5, -1.5, 1.0);
+	drawCloud();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(20.0, -20.0, 1.0);
+	glScaled(-1.0, -1.0, 1.0);
 	drawCloud();
 	glPopMatrix();
 
@@ -170,7 +237,7 @@ void drawCloud() {
 	div = 3;
 
 	//glClear(GL_COLOR_BUFFER_BIT);
-	glColor3d(0.0, 0.0, 0.0);
+	glColor3d(0.0, 0.53, 0.33);
 	glLineWidth(1.5);
 	//drawLittleSpiral(0.5, 0.5);
 	glBegin(GL_LINE_STRIP);
@@ -374,9 +441,6 @@ void drawCloud() {
 				curve_temp.start = spirStart;
 				curve_temp.mid = spirMid;
 				curve_temp.end = spirEnd;
-
-				cout << spirStart.x << " " << spirStart.y << " " << spirStart.z << endl;
-				cout << spirEnd.x << " " << spirEnd.y << " " << spirEnd.z << endl;
 
 				//get bezier
 				for (int i = 0; i < 50; i++) {

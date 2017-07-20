@@ -29,7 +29,9 @@ struct curvePoints {
 vector<vector<curvePoints>> curvePts;
 vector<vec3> startPoint, midPoint, endPoint;
 vector<vector<vec3>> points;
+vector<vector<int>> thueMorse;
 int iterations;
+double edge = 20.0;
 
 //Functions
 void init(void);
@@ -41,9 +43,12 @@ vec3 findMidXPoints(vec3 start, vec3 end, float offset);
 vec3 getBezier(curvePoints points, double a, double b);
 void drawLittleSpiral(double a, double b);
 void drawCloud();
+void thueMorseAlgo();
 
 //Main functions
 int main(int argc, char** argv) {
+	thueMorseAlgo();
+
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize(500, 500);                    // window size
@@ -53,6 +58,7 @@ int main(int argc, char** argv) {
 	glutDisplayFunc(display);
 	//glutReshapeFunc(reshape);
 	glutMainLoop();
+	
 	return 0;
 }
 
@@ -66,7 +72,7 @@ void init(void) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	float edge = 20.0;
+	//edge = 20.0;
 	glOrtho(-edge, edge, -edge, edge, -edge, edge);
 	//if (w <= h) {
 	//	glOrtho(-edge, edge, -edge*(GLfloat)h / (GLfloat)w,
@@ -83,18 +89,41 @@ void init(void) {
 
 void display(void) {
 	init();
-	//for (int c_ = 0; c_ < 3; c_++) {
-	//	glPushMatrix();
-	//	glTranslated(1.0, (GLdouble)(c_ + 2), 1.0);
-	//	glScaled((GLdouble)(1 / (c_ + 1)), (GLdouble)(1 / (c_ + 1)), 1.0);
 
-	//	//function
-	//	drawCloud();
-	//	glFlush();
-	//	glPopMatrix();
-	//}
+	iterations = 4;
+	int x2, y2;
+	int cloudN = 0;
+	double k = edge / 5;
 
-	glPushMatrix();
+	for (int i = -edge; i <= edge; i++) {
+		float scaleX = 1.0;
+		float scaleY = 1.0;
+		x2 = i + k;
+		for (int j = -edge; j <= edge; j++) {
+			y2 = j + k;
+			cloudN++;
+			if (cloudN % 2 == 0) {
+				scaleX = -1.0;
+				//scaleY = -1.0;
+			}
+			else {
+				scaleX = 1.0;
+				//scaleY = 1.0;
+			}
+
+			glPushMatrix();
+			glTranslated((GLfloat)x2, (GLfloat)y2, 0.0);
+			glScaled((GLfloat)scaleX, (GLfloat)scaleY, 1.0);
+			drawCloud();
+			glPopMatrix();
+
+			j += k * 2;
+			scaleY *= -1.0;
+		}
+		i += k * 3;
+	}
+
+	/*glPushMatrix();
 	glTranslated(-20.0, 20.0, 0.0);
 	glScaled(-1.0, -1.0, 1.0);
 	drawCloud();
@@ -170,7 +199,7 @@ void display(void) {
 	glTranslated(20.0, -20.0, 1.0);
 	glScaled(-1.0, -1.0, 1.0);
 	drawCloud();
-	glPopMatrix();
+	glPopMatrix();*/
 
 	glutSwapBuffers();
 }
@@ -200,7 +229,7 @@ void reshape(int w, int h) {
 }
 
 void drawCloud() {
-	iterations = 4;			//number of curve iterations
+	//iterations = 4;			//number of curve iterations
 	double offset = 1.0;		//offset for midpoints - Y distance from centre
 	int nPoints = 50;		//number of points
 	int div;
@@ -561,4 +590,47 @@ void drawLittleSpiral(double a, double b) {
 		y = a * exp(b * theta) * sin(theta);
 		glEnd();
 	}
+}
+
+void thueMorseAlgo() {
+	//2-dimensional thue-morse
+	thueMorse.resize(edge);
+	for (int i = 0; i < thueMorse.size(); i++) {
+		thueMorse[i].resize(edge);
+	}
+
+	for (int i = 0; i < thueMorse.size(); i++) {
+		if (i == 0) {
+			thueMorse[i][0] = 0;
+		}
+		else if (i == 1) {
+			thueMorse[i][0] = 1;
+		}
+		else if (i > 1) {
+			if (i % 2 == 0) {
+				thueMorse[i][0] = thueMorse[i / 2][0];
+			}
+			else if (i % 2 > 0) {
+				thueMorse[i][0] = 1 - thueMorse[i / 2][0];
+			}
+		}
+
+		for (int j = 0; j < thueMorse[i].size(); j++) {
+			if (j == 1) {
+				thueMorse[i][j] = 1 - thueMorse[i][0];
+			}
+			else if (j > 1) {
+				if (j % 2 == 0) {
+					thueMorse[i][j] = thueMorse[i][j / 2];
+				}
+				else if (j % 2 > 0) {
+					thueMorse[i][j] = 1 - thueMorse[i][j / 2];
+				}
+			}
+
+			cout << thueMorse[i][j] << " ";
+		}
+		cout << endl;
+	}
+	cout << endl;
 }

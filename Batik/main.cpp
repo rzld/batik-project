@@ -90,30 +90,48 @@ void init(void) {
 void display(void) {
 	init();
 
-	iterations = 4;
+	//megamendung
+	//to random: iterations, position, scale, rotation, color
+	iterations = 4;			//randomize this
 	int x2, y2;
 	int cloudN = 0;
-	double k = edge / 5;
+	int k = edge / 4;
+	int row = 0;
+	vec3 color;				//randomize this
 
 	for (int i = -edge; i <= edge; i++) {
-		float scaleX = 1.0;
-		float scaleY = 1.0;
+		float scaleX = k/2.75;
+		float scaleY = k/2.75;
 		x2 = i + k;
 		for (int j = -edge; j <= edge; j++) {
 			y2 = j + k;
 			cloudN++;
 			if (cloudN % 2 == 0) {
-				scaleX = -1.0;
+				scaleX *= -1.0;
 				//scaleY = -1.0;
 			}
 			else {
-				scaleX = 1.0;
+				scaleX *= 1.0;
 				//scaleY = 1.0;
 			}
 
+			if (row % 2 > 0) {
+				y2 -= k;
+				color = vec3(0.0, 1.0, 0.0);
+			}
+			else {
+				color = vec3(1.0, 1.0, 0.0);
+			}
+
 			glPushMatrix();
-			glTranslated((GLfloat)x2, (GLfloat)y2, 0.0);
-			glScaled((GLfloat)scaleX, (GLfloat)scaleY, 1.0);
+			//for vertical patterns
+			glRotated(90.0, 0.0, 0.0, 1.0);
+			//move to new positions
+			glTranslated((GLdouble)x2, (GLdouble)y2, 0.0);
+			//scale to become smaller
+			glScaled((GLdouble)scaleX, (GLdouble)scaleY, 1.0);
+			//color the lines
+			glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
 			drawCloud();
 			glPopMatrix();
 
@@ -121,6 +139,7 @@ void display(void) {
 			scaleY *= -1.0;
 		}
 		i += k * 3;
+		row++;
 	}
 
 	/*glPushMatrix();
@@ -266,7 +285,7 @@ void drawCloud() {
 	div = 3;
 
 	//glClear(GL_COLOR_BUFFER_BIT);
-	glColor3d(0.0, 0.53, 0.33);
+	//glColor3d(1.0, 1.0, 1.0);
 	glLineWidth(1.5);
 	//drawLittleSpiral(0.5, 0.5);
 	glBegin(GL_LINE_STRIP);
@@ -594,9 +613,10 @@ void drawLittleSpiral(double a, double b) {
 
 void thueMorseAlgo() {
 	//2-dimensional thue-morse
-	thueMorse.resize(edge);
+	int tmSize = 50;
+	thueMorse.resize(tmSize);
 	for (int i = 0; i < thueMorse.size(); i++) {
-		thueMorse[i].resize(edge);
+		thueMorse[i].resize(tmSize);
 	}
 
 	for (int i = 0; i < thueMorse.size(); i++) {

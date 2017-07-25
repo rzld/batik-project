@@ -31,7 +31,7 @@ vector<vec3> startPoint, midPoint, endPoint;
 vector<vector<vec3>> points;
 vector<vector<int>> thueMorse;
 int iterations;
-double edge = 20.0;
+double edge = 30.0;
 
 //Functions
 void init(void);
@@ -89,6 +89,23 @@ void init(void) {
 
 void display(void) {
 	init();
+
+	int rows = 5;
+	int cols = 5;
+	int nextRow = (edge * 2) / (rows - 1);
+	int nextCol = (edge * 2) / (cols - 1);
+	int rowCount, colCount;
+	cout << nextRow << endl << nextCol << endl;
+
+	colCount = 0;
+	for (int i = -edge; i <= edge; i += nextCol) {
+		rowCount = 0;
+		for (int j = -edge; j <= edge; j += nextRow) {
+			cout << i << " " << j << endl;
+			rowCount += 1;
+		}
+		colCount += 1;
+	}
 	
 	//**cloud version 2
 	int iterations2 = 7;
@@ -178,7 +195,7 @@ void display(void) {
 
 				//find points from the big curve to become new start & end points of new curves
 				int nextPt = (int)(points[i].size() * (k + 1) / div) - 1;
-				cout << i << " " << k << endl;
+				//cout << i << " " << k << endl;
 				curvePts[i][k].start = points[i][k_];
 				curvePts[i][k].end = points[i][nextPt];
 

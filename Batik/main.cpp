@@ -30,8 +30,8 @@ vector<vector<curvePoints>> curvePts;
 vector<vec3> startPoint, midPoint, endPoint;
 vector<vector<vec3>> points;
 vector<vector<int>> thueMorse;
-int iterations;
-double edge = 30.0;
+int iterations, rows, cols;
+double edge = 40.0;
 
 //Functions
 void init(void);
@@ -47,27 +47,10 @@ void thueMorseAlgo(int r, int c);
 
 //Main functions
 int main(int argc, char** argv) {
-	int rows = 5;
-	int cols = 3;
+	rows = 4;
+	cols = 4;
 
 	thueMorseAlgo(rows, cols);
-
-	int nextRow = (edge * 2) / (rows - 1);
-	int nextCol = (edge * 2) / (cols - 1);
-	int rowCount, colCount, x3, y3;
-	//cout << nextRow << endl << nextCol << endl;
-
-	colCount = 0;
-	for (int i = 0; i < cols; i++) {
-		rowCount = 0;
-		x3 = -edge + (i * nextCol);
-		for (int j = 0; j < rows; j++) {
-			y3 = -edge + (j * nextRow);
-			cout << x3 << " " << y3 << endl;
-			rowCount++;
-		}
-		colCount++;
-	}
 
 	/*for (int i = -edge; i <= edge; i += nextCol) {
 		rowCount = 0;
@@ -120,66 +103,107 @@ void init(void) {
 void display(void) {
 	init();
 	
-	//megamendung
-	//to random: iterations, position, scale, rotation, color
+	int nextRow = (edge * 2) / (rows - 1);
+	int nextCol = (edge * 2) / (cols - 1);
+	int rowCount, colCount, x3, y3, ty;
+	vec3 color(1.0, 1.0, 1.0);
+	float scaleX, scaleY;
+	//cout << nextRow << endl << nextCol << endl;
+
 	iterations = 4;			//randomize this
-	int x2, y2;
-	int cloudN = 0;
-	int k = edge / 4;
-	int col = 0;
-	int row, ty;
-	vec3 color;				//randomize this
+	colCount = 0;
+	for (int i = 0; i < cols; i++) {
+		rowCount = 0;
+		x3 = -edge + (i * nextCol);
+		scaleX = 2.0;
+		scaleY = 2.0;
+		for (int j = 0; j < rows; j++) {
+			y3 = -edge + (j * nextRow);
 
-	//regular tiles
-	for (int i = -edge; i <= edge; i++) {
-		row = 0;
-		float scaleX = k/3;
-		float scaleY = k/3;
-		x2 = i + k;
-		for (int j = -edge; j <= edge; j++) {
-			y2 = j + k;
-			cloudN++;
-			if (cloudN % 2 == 0) {
-				scaleX *= -1.0;
-				//scaleY = -1.0;
+			if (thueMorse[i][j] == 0) {
+				ty = 1;
 			}
-			else {
-				scaleX *= 1.0;
-				//scaleY = 1.0;
+			else if (thueMorse[i][j] == 1) {
+				ty = 2;
 			}
 
-			if (col % 2 > 0) {
-				y2 -= k;	//different y position for each row
-				color = vec3(0.0, 1.0, 0.0);
-				//ty = 1;
-			}
-			else {
-				color = vec3(1.0, 1.0, 0.0);
-				//ty = 2;
-			}
-
-			if (row % 2 == 0) ty = 1;
-			else if (row % 2 > 0) ty = 2;
-
+			//cout << x3 << " " << y3 << endl;
 			glPushMatrix();
 			//for vertical patterns
 			glRotated(0.0, 0.0, 0.0, 1.0);
 			//move to new positions
-			glTranslated((GLdouble)x2, (GLdouble)y2, 0.0);
+			glTranslated((GLdouble)x3, (GLdouble)y3, 0.0);
 			//scale to become smaller
 			glScaled((GLdouble)scaleX, (GLdouble)scaleY, 1.0);
 			//color the lines
 			glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
 			drawCloud(ty);
 			glPopMatrix();
-
-			j += k * 2;
-			scaleY *= -1.0;
-			row++;
+			rowCount++;
 		}
-		i += k * 3;
-		col++;
+		colCount++;
 	}
+
+	//megamendung
+	//to random: iterations, position, scale, rotation, color
+	
+	//int x2, y2;
+	//int cloudN = 0;
+	//int k = edge / 4;
+	//int col = 0;
+	//int row, ty;
+	//vec3 color;				//randomize this
+
+	////regular tiles
+	//for (int i = -edge; i <= edge; i++) {
+	//	row = 0;
+	//	float scaleX = k/3;
+	//	float scaleY = k/3;
+	//	x2 = i + k;
+	//	for (int j = -edge; j <= edge; j++) {
+	//		y2 = j + k;
+	//		cloudN++;
+	//		if (cloudN % 2 == 0) {
+	//			scaleX *= -1.0;
+	//			//scaleY = -1.0;
+	//		}
+	//		else {
+	//			scaleX *= 1.0;
+	//			//scaleY = 1.0;
+	//		}
+
+	//		if (col % 2 > 0) {
+	//			y2 -= k;	//different y position for each row
+	//			color = vec3(0.0, 1.0, 0.0);
+	//			//ty = 1;
+	//		}
+	//		else {
+	//			color = vec3(1.0, 1.0, 0.0);
+	//			//ty = 2;
+	//		}
+
+	//		if (row % 2 == 0) ty = 1;
+	//		else if (row % 2 > 0) ty = 2;
+
+	//		glPushMatrix();
+	//		//for vertical patterns
+	//		glRotated(0.0, 0.0, 0.0, 1.0);
+	//		//move to new positions
+	//		glTranslated((GLdouble)x2, (GLdouble)y2, 0.0);
+	//		//scale to become smaller
+	//		glScaled((GLdouble)scaleX, (GLdouble)scaleY, 1.0);
+	//		//color the lines
+	//		glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
+	//		drawCloud(ty);
+	//		glPopMatrix();
+
+	//		j += k * 2;
+	//		scaleY *= -1.0;
+	//		row++;
+	//	}
+	//	i += k * 3;
+	//	col++;
+	//}
 
 	/*glPushMatrix();
 	glTranslated(-20.0, 20.0, 0.0);
@@ -606,16 +630,16 @@ void drawCloud(int type) {
 		double p2 = 2.0;
 		double p3 = 6.0;
 
-		startPoint[0] = vec3(-p1, 0.2, 0.0);
-		endPoint[0] = vec3(-p2, 0.1, 0.0);
+		startPoint[0] = vec3(-p1, -0.7, 0.0);
+		endPoint[0] = vec3(-p2, -0.5, 0.0);
 		midPoint[0] = findMidPoints(startPoint[0], endPoint[0], -2.0);
 
-		endPoint[1] = vec3(-p0, 0.0, 0.0);
-		endPoint[2] = vec3(-p3, 0.0, 0.0);
-		endPoint[3] = vec3(p3, 0.0, 0.0);
-		endPoint[4] = vec3(p0, 0.0, 0.0);
-		endPoint[5] = vec3(p2, 0.1, 0.0);
-		endPoint[6] = vec3(p1, 0.2, 0.0);
+		endPoint[1] = vec3(-p0, -0.5, 0.0);
+		endPoint[2] = vec3(-p3, -0.5, 0.0);
+		endPoint[3] = vec3(p3, -0.5, 0.0);
+		endPoint[4] = vec3(p0, -0.5, 0.0);
+		endPoint[5] = vec3(p2, -0.4, 0.0);
+		endPoint[6] = vec3(p1, -0.7, 0.0);
 
 		//glScaled(3.0, 3.0, 1.0);
 		//glColor3d(1.0, 1.0, 1.0);

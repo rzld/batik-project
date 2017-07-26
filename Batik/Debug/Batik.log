@@ -1,29 +1,34 @@
 ﻿  main.cpp
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(66): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(95): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(96): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(99): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(100): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(156): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(159): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(208): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(445): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(452): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(500): warning C4305: 'argument': truncation from 'double' to 'float'
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(523): warning C4305: 'argument': truncation from 'double' to 'float'
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(580): warning C4305: '=': truncation from 'double' to 'float'
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(583): warning C4305: '=': truncation from 'double' to 'float'
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(627): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(652): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(419): warning C4101: 'yy': unreferenced local variable
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(419): warning C4101: 'xx': unreferenced local variable
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(419): warning C4101: 'zz': unreferenced local variable
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(723): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(724): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(725): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(746): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(758): warning C4018: '<': signed/unsigned mismatch
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(762): warning C4018: '<': signed/unsigned mismatch
-d:\- bristol -\- university -\projects\batik\batik\main.cpp(778): warning C4018: '<': signed/unsigned mismatch
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(55): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(56): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(63): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(65): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(96): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(128): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(134): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(136): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(137): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(139): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(343): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(350): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(398): warning C4305: 'argument': truncation from 'double' to 'float'
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(421): warning C4305: 'argument': truncation from 'double' to 'float'
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(478): warning C4305: '=': truncation from 'double' to 'float'
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(481): warning C4305: '=': truncation from 'double' to 'float'
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(525): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(550): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(635): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(639): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(692): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(317): warning C4101: 'yy': unreferenced local variable
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(317): warning C4101: 'xx': unreferenced local variable
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(317): warning C4101: 'zz': unreferenced local variable
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(755): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(756): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(757): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(778): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(790): warning C4018: '<': signed/unsigned mismatch
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(794): warning C4018: '<': signed/unsigned mismatch
+d:\- bristol -\- university -\projects\batik\batik\main.cpp(810): warning C4018: '<': signed/unsigned mismatch
   Batik.vcxproj -> D:\- Bristol -\- University -\Projects\Batik\Debug\Batik.exe
   Batik.vcxproj -> D:\- Bristol -\- University -\Projects\Batik\Debug\Batik.pdb (Partial PDB)

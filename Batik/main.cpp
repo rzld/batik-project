@@ -42,12 +42,42 @@ vec3 findMidPoints(vec3 start, vec3 end, float offset);
 vec3 findMidXPoints(vec3 start, vec3 end, float offset);
 vec3 getBezier(curvePoints points, double a, double b);
 void drawLittleSpiral(double a, double b);
-void drawCloud();
-void thueMorseAlgo();
+void drawCloud(int type);
+void thueMorseAlgo(int r, int c);
 
 //Main functions
 int main(int argc, char** argv) {
-	thueMorseAlgo();
+	int rows = 5;
+	int cols = 3;
+
+	thueMorseAlgo(rows, cols);
+
+	int nextRow = (edge * 2) / (rows - 1);
+	int nextCol = (edge * 2) / (cols - 1);
+	int rowCount, colCount, x3, y3;
+	//cout << nextRow << endl << nextCol << endl;
+
+	colCount = 0;
+	for (int i = 0; i < cols; i++) {
+		rowCount = 0;
+		x3 = -edge + (i * nextCol);
+		for (int j = 0; j < rows; j++) {
+			y3 = -edge + (j * nextRow);
+			cout << x3 << " " << y3 << endl;
+			rowCount++;
+		}
+		colCount++;
+	}
+
+	/*for (int i = -edge; i <= edge; i += nextCol) {
+		rowCount = 0;
+		for (int j = -edge; j <= edge; j += nextRow) {
+			cout << i << " " << j << endl;
+			rowCount += 1;
+		}
+		colCount += 1;
+	}
+	cout << endl;*/
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
@@ -89,203 +119,67 @@ void init(void) {
 
 void display(void) {
 	init();
-
-	int rows = 5;
-	int cols = 5;
-	int nextRow = (edge * 2) / (rows - 1);
-	int nextCol = (edge * 2) / (cols - 1);
-	int rowCount, colCount;
-	cout << nextRow << endl << nextCol << endl;
-
-	colCount = 0;
-	for (int i = -edge; i <= edge; i += nextCol) {
-		rowCount = 0;
-		for (int j = -edge; j <= edge; j += nextRow) {
-			cout << i << " " << j << endl;
-			rowCount += 1;
-		}
-		colCount += 1;
-	}
 	
-	//**cloud version 2
-	int iterations2 = 7;
-	int nPoints = 50;		//number of points
-	int div;
-	double offset, offset2;
-	vec3 bezierResults;
-	vec3 finalPoint;
-	curvePoints curve_temp;
+	//megamendung
+	//to random: iterations, position, scale, rotation, color
+	iterations = 4;			//randomize this
+	int x2, y2;
+	int cloudN = 0;
+	int k = edge / 4;
+	int col = 0;
+	int row, ty;
+	vec3 color;				//randomize this
 
-	startPoint.resize(iterations2);
-	midPoint.resize(iterations2);
-	endPoint.resize(iterations2);
-	points.resize(iterations2);
-	for (int p = 0; p < (int)points.size(); p++) {
-		points[p].resize(nPoints);
-	}
-	curvePts.resize(iterations2);
-
-	double p0 = 0.25;
-	double p1 = 0.75;
-	double p2 = 1.25;
-	double p3 = 3.5;
-
-	startPoint[0] = vec3(-p1, 0.0, 0.0);
-	endPoint[0] = vec3(-p2, 0.0, 0.0);
-	midPoint[0] = findMidPoints(startPoint[0], endPoint[0], -2.0);
-
-	endPoint[1] = vec3(-p0, 0.0, 0.0);
-	endPoint[2] = vec3(-p3, 0.0, 0.0);
-	endPoint[3] = vec3(p3, 0.0, 0.0);
-	endPoint[4] = vec3(p0, 0.0, 0.0);
-	endPoint[5] = vec3(p2, 0.0, 0.0);
-	endPoint[6] = vec3(p1, 0.0, 0.0);
-
-	glScaled(3.0, 3.0, 1.0);
-	glColor3d(1.0, 1.0, 1.0);
-	glLineWidth(2.0);
-	glBegin(GL_LINE_STRIP);
-
-	for (int i = 0; i < iterations2; i++) {
-		if (i < 2 || i > 4) offset = 0.6;
-		else if (i == 3) offset = 3.0;
-		else offset = 2.5;
-		
-		if (i > 0) {
-			startPoint[i] = endPoint[i - 1];
-		}
-		
-		if (i % 2 == 0) {
-			midPoint[i] = findMidPoints(startPoint[i], endPoint[i], -offset);
-		}
-		else if (i % 2 >= 0) {
-			midPoint[i] = findMidPoints(startPoint[i], endPoint[i], offset);
-		}
-
-		double a, b, c, d;
-		a = 1.0;
-		b = 1.0 - a;
-
-		curve_temp.start = startPoint[i];
-		curve_temp.mid = midPoint[i];
-		curve_temp.end = endPoint[i];
-
-		for (int j = 0; j < nPoints; j++) {
-			bezierResults = getBezier(curve_temp, a, b);
-			points[i][j] = bezierResults;
-			
-			if (i < 2 || i > 4) {
-				glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+	//regular tiles
+	for (int i = -edge; i <= edge; i++) {
+		row = 0;
+		float scaleX = k/3;
+		float scaleY = k/3;
+		x2 = i + k;
+		for (int j = -edge; j <= edge; j++) {
+			y2 = j + k;
+			cloudN++;
+			if (cloudN % 2 == 0) {
+				scaleX *= -1.0;
+				//scaleY = -1.0;
+			}
+			else {
+				scaleX *= 1.0;
+				//scaleY = 1.0;
 			}
 
-			a -= 1.0 / nPoints;
-			b = 1.0 - a;
-		}
-
-		if (i % 2 == 0) div = 4;
-		else if (i % 2 > 0) div = 6;
-
-		int k_ = 0;
-		curvePts[i].resize(div);
-
-		if (i > 1 && i < 5) {
-			for (int k = 0; k < div; k++) {
-				c = 1.0;
-				d = 1.0 - c;
-
-				//find points from the big curve to become new start & end points of new curves
-				int nextPt = (int)(points[i].size() * (k + 1) / div) - 1;
-				//cout << i << " " << k << endl;
-				curvePts[i][k].start = points[i][k_];
-				curvePts[i][k].end = points[i][nextPt];
-
-				k_ = nextPt;
-
-				//find mid points of each curve
-				if (k % 2 == 0) {
-					offset2 = -0.3;
-				}
-				else {
-					offset2 = 0.3;
-				}
-				curvePts[i][k].mid = findMidPoints(curvePts[i][k].start, curvePts[i][k].end, offset2);
-
-				curve_temp.start = curvePts[i][k].start;
-				curve_temp.mid = curvePts[i][k].mid;
-				curve_temp.end = curvePts[i][k].end;
-
-				//find points of each new curve
-				//loop through number of points, count x y z
-				for (int m = 0; m < nPoints; m++) {
-					bezierResults = getBezier(curve_temp, c, d);
-
-					//draw
-					glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
-
-					//change variables
-					c -= 1.0 / nPoints;
-					d = 1.0 - c;
-				}
+			if (col % 2 > 0) {
+				y2 -= k;	//different y position for each row
+				color = vec3(0.0, 1.0, 0.0);
+				//ty = 1;
 			}
+			else {
+				color = vec3(1.0, 1.0, 0.0);
+				//ty = 2;
+			}
+
+			if (row % 2 == 0) ty = 1;
+			else if (row % 2 > 0) ty = 2;
+
+			glPushMatrix();
+			//for vertical patterns
+			glRotated(0.0, 0.0, 0.0, 1.0);
+			//move to new positions
+			glTranslated((GLdouble)x2, (GLdouble)y2, 0.0);
+			//scale to become smaller
+			glScaled((GLdouble)scaleX, (GLdouble)scaleY, 1.0);
+			//color the lines
+			glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
+			drawCloud(ty);
+			glPopMatrix();
+
+			j += k * 2;
+			scaleY *= -1.0;
+			row++;
 		}
+		i += k * 3;
+		col++;
 	}
-
-	glEnd();
-	glFlush();
-	//**end of cloud version 2
-
-	////megamendung
-	////to random: iterations, position, scale, rotation, color
-	//iterations = 4;			//randomize this
-	//int x2, y2;
-	//int cloudN = 0;
-	//int k = edge / 4;
-	//int row = 0;
-	//vec3 color;				//randomize this
-
-	////regular tiles
-	//for (int i = -edge; i <= edge; i++) {
-	//	float scaleX = k/2.75;
-	//	float scaleY = k/2.75;
-	//	x2 = i + k;
-	//	for (int j = -edge; j <= edge; j++) {
-	//		y2 = j + k;
-	//		cloudN++;
-	//		if (cloudN % 2 == 0) {
-	//			scaleX *= -1.0;
-	//			//scaleY = -1.0;
-	//		}
-	//		else {
-	//			scaleX *= 1.0;
-	//			//scaleY = 1.0;
-	//		}
-
-	//		if (row % 2 > 0) {
-	//			y2 -= k;	//different y position for each row
-	//			color = vec3(0.0, 1.0, 0.0);
-	//		}
-	//		else {
-	//			color = vec3(1.0, 1.0, 0.0);
-	//		}
-
-	//		glPushMatrix();
-	//		//for vertical patterns
-	//		glRotated(90.0, 0.0, 0.0, 1.0);
-	//		//move to new positions
-	//		glTranslated((GLdouble)x2, (GLdouble)y2, 0.0);
-	//		//scale to become smaller
-	//		glScaled((GLdouble)scaleX, (GLdouble)scaleY, 1.0);
-	//		//color the lines
-	//		glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
-	//		drawCloud();
-	//		glPopMatrix();
-
-	//		j += k * 2;
-	//		scaleY *= -1.0;
-	//	}
-	//	i += k * 3;
-	//	row++;
-	//}
 
 	/*glPushMatrix();
 	glTranslated(-20.0, 20.0, 0.0);
@@ -392,253 +286,123 @@ void reshape(int w, int h) {
 	//glScalef(0.5, 0.5, 1.0);
 }
 
-void drawCloud() {
-	//iterations = 4;			//number of curve iterations
-	double offset = 1.0;		//offset for midpoints - Y distance from centre
-	int nPoints = 50;		//number of points
-	int div;
-	vec3 bezierResults;
-	vec3 finalPoint;
+void drawCloud(int type) {
+	if (type == 1) {
+		//iterations = 4;			//number of curve iterations
+		double offset = 1.0;		//offset for midpoints - Y distance from centre
+		int nPoints = 50;		//number of points
+		int div;
+		vec3 bezierResults;
+		vec3 finalPoint;
 
-	startPoint.resize(iterations);
-	midPoint.resize(iterations);
-	endPoint.resize(iterations);
-	points.resize(iterations);
-	for (int p = 0; p < (int)points.size(); p++) {
-		points[p].resize(nPoints);
-	}
-	curvePts.resize(iterations);
-
-	/*cout << "*" << c_ << endl;
-	cout << startPoint.size() << " " << midPoint.size() << " " << endPoint.size() << endl;
-	cout << points.size() << " " << curvePts.size() << endl;*/
-
-	//Initial control points
-	startPoint[0] = vec3(-4.0, 0.0, 0.0);								//A
-	endPoint[0] = vec3(4.0, 0.0, 0.0);									//C
-	midPoint[0] = findMidPoints(startPoint[0], endPoint[0], 2.0);		//B
-
-	//Points on curve
-	double xx, yy, zz;
-	curvePoints curve_temp;
-	div = 3;
-
-	//glClear(GL_COLOR_BUFFER_BIT);
-	//glColor3d(1.0, 1.0, 1.0);
-	glLineWidth(1.5);
-	//drawLittleSpiral(0.5, 0.5);
-	glBegin(GL_LINE_STRIP);
-
-	for (int j = 0; j < iterations; j++) {
-		//variable
-		double a, b, c, d;
-		a = 1.0;
-		b = 1.0 - a;
-		//div = j + 3;
-
-		curvePts[j].resize(div);
-
-		//find mid points
-		if (j > 0) {
-			if (j % 2 == 0) {
-				//upwards curve
-				//set the next points
-				startPoint[j] = endPoint[j - 1];
-				endPoint[j] = findEndPoint(startPoint[j - 1], -2.0);
-				midPoint[j] = findMidPoints(startPoint[j], endPoint[j], offset * (j + 2));
-			}
-			else {
-				//downwards curve
-				//set the next points
-				startPoint[j] = endPoint[j - 1];
-				endPoint[j] = findEndPoint(startPoint[j - 1], 2.0);
-				midPoint[j] = findMidPoints(startPoint[j], endPoint[j], -offset * (j + 2));
-			}
+		startPoint.resize(iterations);
+		midPoint.resize(iterations);
+		endPoint.resize(iterations);
+		points.resize(iterations);
+		for (int p = 0; p < (int)points.size(); p++) {
+			points[p].resize(nPoints);
 		}
+		curvePts.resize(iterations);
 
-		//get the points of bezier curve
-		curve_temp.start = startPoint[j];
-		curve_temp.mid = midPoint[j];
-		curve_temp.end = endPoint[j];
-		//find the points in the curve and draw
+		/*cout << "*" << c_ << endl;
+		cout << startPoint.size() << " " << midPoint.size() << " " << endPoint.size() << endl;
+		cout << points.size() << " " << curvePts.size() << endl;*/
 
-		//base curve
-		for (int i = 0; i < nPoints; i++) {
-			//cout << i << endl;
-			bezierResults = getBezier(curve_temp, a, b);
-			points[j][i] = bezierResults;
+		//Initial control points
+		startPoint[0] = vec3(-4.0, 0.0, 0.0);								//A
+		endPoint[0] = vec3(4.0, 0.0, 0.0);									//C
+		midPoint[0] = findMidPoints(startPoint[0], endPoint[0], 2.0);		//B
 
-			//cout << points[j][i].x << " " << points[j][i].y << " " << points[j][i].z << endl;
+		//Points on curve
+		double xx, yy, zz;
+		curvePoints curve_temp;
+		div = 3;
 
-			//draw
-			//glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+		//glClear(GL_COLOR_BUFFER_BIT);
+		//glColor3d(1.0, 1.0, 1.0);
+		glLineWidth(1.5);
+		//drawLittleSpiral(0.5, 0.5);
+		glBegin(GL_LINE_STRIP);
 
-			//change variable
-			a -= 1.0 / nPoints;
+		for (int j = 0; j < iterations; j++) {
+			//variable
+			double a, b, c, d;
+			a = 1.0;
 			b = 1.0 - a;
-		}
+			//div = j + 3;
 
-		if (j == iterations - 1) {
-			div = div / 2 - 1;
-			points[j].erase(points[j].begin() + (nPoints / 2), points[j].begin() + nPoints);
-		}
+			curvePts[j].resize(div);
 
-		a = 1.0;
-		b = 1.0 - a;
-
-		//add extra curve for the centre part
-		if (j == 0) {
-			vec3 spiralEnd1(3.9, -0.5, 0.0);
-			vec3 spiralEnd2(3.9, 0.5, 0.0);
-			vec3 spiralEnd3(3.8, -0.2, 0.0);
-
-			//spiral
-			double e = 1.0;
-			double f = 1.0 - e;
-
-			vec3 spirStart, spirEnd, spirMid;
-			//1
-			spirStart = startPoint[0] + spiralEnd3;			//spiralEnd3
-			spirEnd = startPoint[0] + spiralEnd2;				//sspiralEnd2
-			spirMid = findMidXPoints(spirStart, spirEnd, -0.8);
-
-			curve_temp.start = spirStart;
-			curve_temp.mid = spirMid;
-			curve_temp.end = spirEnd;
-
-			//get bezier
-			for (int i = 0; i < nPoints; i++) {
-				bezierResults = getBezier(curve_temp, e, f);
-
-				//draw
-				glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
-
-				//change variables
-				e -= 1.0 / nPoints;
-				f = 1.0 - e;
+			//find mid points
+			if (j > 0) {
+				if (j % 2 == 0) {
+					//upwards curve
+					//set the next points
+					startPoint[j] = endPoint[j - 1];
+					endPoint[j] = findEndPoint(startPoint[j - 1], -2.0);
+					midPoint[j] = findMidPoints(startPoint[j], endPoint[j], offset * (j + 2));
+				}
+				else {
+					//downwards curve
+					//set the next points
+					startPoint[j] = endPoint[j - 1];
+					endPoint[j] = findEndPoint(startPoint[j - 1], 2.0);
+					midPoint[j] = findMidPoints(startPoint[j], endPoint[j], -offset * (j + 2));
+				}
 			}
 
-			//2
-			e = 1.0;
-			f = 1.0 - e;
-			spirStart = startPoint[0] + spiralEnd2;			//spiralEnd2
-			spirEnd = startPoint[0] + spiralEnd1;			//spiralEnd1
-			spirMid = findMidXPoints(spirStart, spirEnd, 0.8);
+			//get the points of bezier curve
+			curve_temp.start = startPoint[j];
+			curve_temp.mid = midPoint[j];
+			curve_temp.end = endPoint[j];
+			//find the points in the curve and draw
 
-			curve_temp.start = spirStart;
-			curve_temp.mid = spirMid;
-			curve_temp.end = spirEnd;
-
-			//get bezier
-			for (int i = 0; i < 50; i++) {
-				bezierResults = getBezier(curve_temp, e, f);
-
-				//draw
-				glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
-
-				//change variables
-				e -= 1.0 / nPoints;
-				f = 1.0 - e;
-			}
-
-			//curve
-			curve_temp.start = spirEnd;
-			curve_temp.end = startPoint[j];
-			curve_temp.mid = findMidPoints(curve_temp.start, curve_temp.end, -0.5);
-
+			//base curve
 			for (int i = 0; i < nPoints; i++) {
-				//get the points of bezier curve
+				//cout << i << endl;
 				bezierResults = getBezier(curve_temp, a, b);
-				//points[j][i] += bezierResults;
+				points[j][i] = bezierResults;
+
+				//cout << points[j][i].x << " " << points[j][i].y << " " << points[j][i].z << endl;
 
 				//draw
-				glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+				//glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
 
 				//change variable
 				a -= 1.0 / nPoints;
 				b = 1.0 - a;
 			}
 
-
-		}
-
-		int k_ = 0;
-		float offset2;
-
-		for (int k = 0; k < div; k++) {
-			c = 1.0;
-			d = 1.0 - c;
-
-			//find points from the big curve to become new start & end points of new curves
-			int nextPt = (int)(points[j].size() * (k + 1) / div) - 1;
-			//cout << j << " " << k_ << endl;
-			//cout << nextPt << endl;
-			curvePts[j][k].start = points[j][k_];
-			curvePts[j][k].end = points[j][nextPt];
-
-			k_ = nextPt;
-
-			//find mid points of each curve
-			if (k % 2 == 0) {
-				offset2 = -0.4;
-			}
-			else {
-				offset2 = 0.4;
-			}
-			curvePts[j][k].mid = findMidPoints(curvePts[j][k].start, curvePts[j][k].end, offset2);
-
-			curve_temp.start = curvePts[j][k].start;
-			curve_temp.mid = curvePts[j][k].mid;
-			curve_temp.end = curvePts[j][k].end;
-
-			//find points of each new curve
-			//loop through number of points, count x y z
-			for (int m = 0; m < nPoints; m++) {
-				bezierResults = getBezier(curve_temp, c, d);
-
-				//draw
-				glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
-
-				//change variables
-				c -= 1.0 / nPoints;
-				d = 1.0 - c;
+			if (j == iterations - 1) {
+				div = div / 2 - 1;
+				points[j].erase(points[j].begin() + (nPoints / 2), points[j].begin() + nPoints);
 			}
 
-			//draw inwards spiral from final point
-			if (j == iterations - 1 && k == div - 1) {
-				double e = 1.0;
-				double f = 1.0 - e;
-				double endY1, endY2, offset3, offset4;
+			a = 1.0;
+			b = 1.0 - a;
 
-				if (iterations % 2 == 0) {
-					endY1 = 0.8;
-					endY2 = -0.6;
-					offset3 = -0.6;
-					offset4 = 0.8;
-				}
-				else {
-					endY1 = -0.8;
-					endY2 = 0.6;
-					offset3 = 0.6;
-					offset4 = -0.8;
-				}
+			//add extra curve for the centre part
+			if (j == 0) {
+				vec3 spiralEnd1(3.9, -0.5, 0.0);
+				vec3 spiralEnd2(3.9, 0.5, 0.0);
+				vec3 spiralEnd3(3.8, -0.2, 0.0);
 
 				//spiral
+				double e = 1.0;
+				double f = 1.0 - e;
+
 				vec3 spirStart, spirEnd, spirMid;
-				spirStart = vec3(points[j][points[j].size() - 1].x, points[j][points[j].size() - 1].y, 0.0);
-				spirEnd = vec3(points[j][points[j].size() - 1].x, points[j][points[j].size() - 1].y + endY1, 0.0);
-				spirMid = findMidXPoints(spirStart, spirEnd, offset3);
+				//1
+				spirStart = startPoint[0] + spiralEnd3;			//spiralEnd3
+				spirEnd = startPoint[0] + spiralEnd2;				//sspiralEnd2
+				spirMid = findMidXPoints(spirStart, spirEnd, -0.8);
 
 				curve_temp.start = spirStart;
 				curve_temp.mid = spirMid;
 				curve_temp.end = spirEnd;
 
 				//get bezier
-				for (int i = 0; i < 50; i++) {
-					/*curve_temp.start = spirStart;
-					curve_temp.mid = spirMid;
-					curve_temp.end = spirEnd;*/
-
+				for (int i = 0; i < nPoints; i++) {
 					bezierResults = getBezier(curve_temp, e, f);
 
 					//draw
@@ -649,13 +413,12 @@ void drawCloud() {
 					f = 1.0 - e;
 				}
 
-				//do one more time for smaller circle
-				spirStart = spirEnd;
-				spirEnd = vec3(spirStart.x + 0.1, spirStart.y + endY2, 0.0);
-				spirMid = findMidXPoints(spirStart, spirEnd, offset4);
-
+				//2
 				e = 1.0;
 				f = 1.0 - e;
+				spirStart = startPoint[0] + spiralEnd2;			//spiralEnd2
+				spirEnd = startPoint[0] + spiralEnd1;			//spiralEnd1
+				spirMid = findMidXPoints(spirStart, spirEnd, 0.8);
 
 				curve_temp.start = spirStart;
 				curve_temp.mid = spirMid;
@@ -663,10 +426,6 @@ void drawCloud() {
 
 				//get bezier
 				for (int i = 0; i < 50; i++) {
-					/*curve_temp.start = spirStart;
-					curve_temp.mid = spirMid;
-					curve_temp.end = spirEnd;*/
-
 					bezierResults = getBezier(curve_temp, e, f);
 
 					//draw
@@ -677,14 +436,284 @@ void drawCloud() {
 					f = 1.0 - e;
 				}
 
-				/*glVertex3d(spirStart.x, spirStart.y, 0.0);
-				glVertex3d(spirMid.x, spirMid.y, 0.0);
-				glVertex3d(spirEnd.x, spirEnd.y, 0.0);*/
-				//cout << points[j][k].x << " " << points[j][k].y << endl;
+				//curve
+				curve_temp.start = spirEnd;
+				curve_temp.end = startPoint[j];
+				curve_temp.mid = findMidPoints(curve_temp.start, curve_temp.end, -0.5);
+
+				for (int i = 0; i < nPoints; i++) {
+					//get the points of bezier curve
+					bezierResults = getBezier(curve_temp, a, b);
+					//points[j][i] += bezierResults;
+
+					//draw
+					glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+
+					//change variable
+					a -= 1.0 / nPoints;
+					b = 1.0 - a;
+				}
+
+
+			}
+
+			int k_ = 0;
+			float offset2;
+
+			for (int k = 0; k < div; k++) {
+				c = 1.0;
+				d = 1.0 - c;
+
+				//find points from the big curve to become new start & end points of new curves
+				int nextPt = (int)(points[j].size() * (k + 1) / div) - 1;
+				//cout << j << " " << k_ << endl;
+				//cout << nextPt << endl;
+				curvePts[j][k].start = points[j][k_];
+				curvePts[j][k].end = points[j][nextPt];
+
+				k_ = nextPt;
+
+				//find mid points of each curve
+				if (k % 2 == 0) {
+					offset2 = -0.4;
+				}
+				else {
+					offset2 = 0.4;
+				}
+				curvePts[j][k].mid = findMidPoints(curvePts[j][k].start, curvePts[j][k].end, offset2);
+
+				curve_temp.start = curvePts[j][k].start;
+				curve_temp.mid = curvePts[j][k].mid;
+				curve_temp.end = curvePts[j][k].end;
+
+				//find points of each new curve
+				//loop through number of points, count x y z
+				for (int m = 0; m < nPoints; m++) {
+					bezierResults = getBezier(curve_temp, c, d);
+
+					//draw
+					glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+
+					//change variables
+					c -= 1.0 / nPoints;
+					d = 1.0 - c;
+				}
+
+				//draw inwards spiral from final point
+				if (j == iterations - 1 && k == div - 1) {
+					double e = 1.0;
+					double f = 1.0 - e;
+					double endY1, endY2, offset3, offset4;
+
+					if (iterations % 2 == 0) {
+						endY1 = 0.8;
+						endY2 = -0.6;
+						offset3 = -0.6;
+						offset4 = 0.8;
+					}
+					else {
+						endY1 = -0.8;
+						endY2 = 0.6;
+						offset3 = 0.6;
+						offset4 = -0.8;
+					}
+
+					//spiral
+					vec3 spirStart, spirEnd, spirMid;
+					spirStart = vec3(points[j][points[j].size() - 1].x, points[j][points[j].size() - 1].y, 0.0);
+					spirEnd = vec3(points[j][points[j].size() - 1].x, points[j][points[j].size() - 1].y + endY1, 0.0);
+					spirMid = findMidXPoints(spirStart, spirEnd, offset3);
+
+					curve_temp.start = spirStart;
+					curve_temp.mid = spirMid;
+					curve_temp.end = spirEnd;
+
+					//get bezier
+					for (int i = 0; i < 50; i++) {
+						/*curve_temp.start = spirStart;
+						curve_temp.mid = spirMid;
+						curve_temp.end = spirEnd;*/
+
+						bezierResults = getBezier(curve_temp, e, f);
+
+						//draw
+						glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+
+						//change variables
+						e -= 1.0 / nPoints;
+						f = 1.0 - e;
+					}
+
+					//do one more time for smaller circle
+					spirStart = spirEnd;
+					spirEnd = vec3(spirStart.x + 0.1, spirStart.y + endY2, 0.0);
+					spirMid = findMidXPoints(spirStart, spirEnd, offset4);
+
+					e = 1.0;
+					f = 1.0 - e;
+
+					curve_temp.start = spirStart;
+					curve_temp.mid = spirMid;
+					curve_temp.end = spirEnd;
+
+					//get bezier
+					for (int i = 0; i < 50; i++) {
+						/*curve_temp.start = spirStart;
+						curve_temp.mid = spirMid;
+						curve_temp.end = spirEnd;*/
+
+						bezierResults = getBezier(curve_temp, e, f);
+
+						//draw
+						glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+
+						//change variables
+						e -= 1.0 / nPoints;
+						f = 1.0 - e;
+					}
+
+					/*glVertex3d(spirStart.x, spirStart.y, 0.0);
+					glVertex3d(spirMid.x, spirMid.y, 0.0);
+					glVertex3d(spirEnd.x, spirEnd.y, 0.0);*/
+					//cout << points[j][k].x << " " << points[j][k].y << endl;
+				}
+			}
+
+			div += 2;
+		}
+	}
+	else if (type == 2) {
+		//**cloud version 2
+		int iterations2 = 7;
+		int nPoints = 50;		//number of points
+		int div;
+		double offset, offset2;
+		vec3 bezierResults;
+		vec3 finalPoint;
+		curvePoints curve_temp;
+
+		startPoint.resize(iterations2);
+		midPoint.resize(iterations2);
+		endPoint.resize(iterations2);
+		points.resize(iterations2);
+		for (int p = 0; p < (int)points.size(); p++) {
+			points[p].resize(nPoints);
+		}
+		curvePts.resize(iterations2);
+
+		double p0 = 0.0;
+		double p1 = 0.8;
+		double p2 = 2.0;
+		double p3 = 6.0;
+
+		startPoint[0] = vec3(-p1, 0.2, 0.0);
+		endPoint[0] = vec3(-p2, 0.1, 0.0);
+		midPoint[0] = findMidPoints(startPoint[0], endPoint[0], -2.0);
+
+		endPoint[1] = vec3(-p0, 0.0, 0.0);
+		endPoint[2] = vec3(-p3, 0.0, 0.0);
+		endPoint[3] = vec3(p3, 0.0, 0.0);
+		endPoint[4] = vec3(p0, 0.0, 0.0);
+		endPoint[5] = vec3(p2, 0.1, 0.0);
+		endPoint[6] = vec3(p1, 0.2, 0.0);
+
+		//glScaled(3.0, 3.0, 1.0);
+		//glColor3d(1.0, 1.0, 1.0);
+		glLineWidth(2.0);
+		glBegin(GL_LINE_STRIP);
+
+		for (int i = 0; i < iterations2; i++) {
+			if (i < 2 || i > 4) offset = 1.0;
+			else if (i == 3) offset = p3;
+			else offset = 3.0;
+
+			if (i > 0) {
+				startPoint[i] = endPoint[i - 1];
+			}
+
+			if (i % 2 == 0) {
+				midPoint[i] = findMidPoints(startPoint[i], endPoint[i], -offset);
+			}
+			else if (i % 2 >= 0) {
+				offset += 1.0;
+				midPoint[i] = findMidPoints(startPoint[i], endPoint[i], offset);
+			}
+
+			double a, b, c, d;
+			a = 1.0;
+			b = 1.0 - a;
+
+			curve_temp.start = startPoint[i];
+			curve_temp.mid = midPoint[i];
+			curve_temp.end = endPoint[i];
+
+			for (int j = 0; j < nPoints; j++) {
+				bezierResults = getBezier(curve_temp, a, b);
+				points[i][j] = bezierResults;
+
+				if (i < 2 || i > 4) {
+					glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+				}
+
+				a -= 1.0 / nPoints;
+				b = 1.0 - a;
+			}
+
+			if (i % 2 == 0) div = 4;
+			else if (i % 2 > 0) div = 6;
+
+			int k_ = 0;
+			curvePts[i].resize(div);
+
+			if (i > 1 && i < 5) {
+				for (int k = 0; k < div; k++) {
+					c = 1.0;
+					d = 1.0 - c;
+
+					//find points from the big curve to become new start & end points of new curves
+					int nextPt = (int)(points[i].size() * (k + 1) / div) - 1;
+					//cout << i << " " << k << endl;
+					curvePts[i][k].start = points[i][k_];
+					curvePts[i][k].end = points[i][nextPt];
+
+					k_ = nextPt;
+
+					//find mid points of each curve
+					if (k % 2 == 0) {
+						offset2 = -(p3 / 10);
+					}
+					else {
+						offset2 = p3/10;
+					}
+
+					if (i == 4) {
+						offset2 *= -1.0;
+					}
+					curvePts[i][k].mid = findMidPoints(curvePts[i][k].start, curvePts[i][k].end, offset2);
+
+					curve_temp.start = curvePts[i][k].start;
+					curve_temp.mid = curvePts[i][k].mid;
+					curve_temp.end = curvePts[i][k].end;
+
+					//find points of each new curve
+					//loop through number of points, count x y z
+					for (int m = 0; m < nPoints; m++) {
+						bezierResults = getBezier(curve_temp, c, d);
+
+						//draw
+						glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+
+						//change variables
+						c -= 1.0 / nPoints;
+						d = 1.0 - c;
+					}
+				}
 			}
 		}
 
-		div += 2;
+		glEnd();
+		glFlush();
+		//**end of cloud version 2
 	}
 
 	glEnd();
@@ -754,12 +783,12 @@ void drawLittleSpiral(double a, double b) {
 	}
 }
 
-void thueMorseAlgo() {
+void thueMorseAlgo(int r, int c) {
 	//2-dimensional thue-morse
-	int tmSize = 50;
-	thueMorse.resize(tmSize);
+	//int tmSize = 4;
+	thueMorse.resize(c);
 	for (int i = 0; i < thueMorse.size(); i++) {
-		thueMorse[i].resize(tmSize);
+		thueMorse[i].resize(r);
 	}
 
 	for (int i = 0; i < thueMorse.size(); i++) {
@@ -791,9 +820,9 @@ void thueMorseAlgo() {
 				}
 			}
 
-			//cout << thueMorse[i][j] << " ";
+			cout << thueMorse[i][j] << " ";
 		}
-		//cout << endl;
+		cout << endl;
 	}
-	//cout << endl;
+	cout << endl;
 }

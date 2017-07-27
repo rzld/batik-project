@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <vector>
 #include <GL\glew.h>
 #include <GL\freeglut.h>
@@ -30,8 +31,8 @@ vector<vector<curvePoints>> curvePts;
 vector<vec3> startPoint, midPoint, endPoint;
 vector<vector<vec3>> points;
 vector<vector<int>> thueMorse;
-int iterations, rows, cols;
-double edge = 40.0;
+int iterations, rows, cols, tmRandomX, tmRandomY;
+double edge;
 
 //Functions
 void init(void);
@@ -47,10 +48,16 @@ void thueMorseAlgo(int r, int c);
 
 //Main functions
 int main(int argc, char** argv) {
-	rows = 4;
+	rows = 5;
 	cols = 4;
+	edge = 40.0;
 
-	thueMorseAlgo(rows, cols);
+	thueMorseAlgo(edge, edge);
+
+	srand(time(NULL));
+	tmRandomX = rand() % (int)edge + 1;
+	tmRandomY = rand() % (int)edge + 1;
+	cout << tmRandomX << " " << tmRandomY << endl;
 
 	/*for (int i = -edge; i <= edge; i += nextCol) {
 		rowCount = 0;
@@ -114,18 +121,27 @@ void display(void) {
 	colCount = 0;
 	for (int i = 0; i < cols; i++) {
 		rowCount = 0;
-		x3 = -edge + (i * nextCol);
-		scaleX = 2.0;
-		scaleY = 2.0;
-		for (int j = 0; j < rows; j++) {
-			y3 = -edge + (j * nextRow);
+		x3 = -edge + (i * nextCol);			//not random
 
-			if (thueMorse[i][j] == 0) {
-				ty = 1;
-			}
-			else if (thueMorse[i][j] == 1) {
+		scaleX = 2.0;	//random
+		scaleY = 2.0;	//random
+		for (int j = 0; j < rows; j++) {
+			//random position
+			/*int ii = rand() % ((int)edge * 2) + 1;
+			int jj = rand() % ((int)edge * 2) + 1;
+			x3 = -edge + ii;
+			y3 = -edge + jj;
+			cout << ii << " " << jj << endl;*/
+
+			y3 = -edge + (j * nextRow);		//not random
+
+			if (thueMorse[i + tmRandomX][j + tmRandomY] == 0) {
 				ty = 2;
 			}
+			else if (thueMorse[i + tmRandomX][j + tmRandomY] == 1) {
+				ty = 1;
+			}
+			cout << thueMorse[i + tmRandomX][j + tmRandomY] << " ";
 
 			//cout << x3 << " " << y3 << endl;
 			glPushMatrix();
@@ -141,6 +157,7 @@ void display(void) {
 			glPopMatrix();
 			rowCount++;
 		}
+		cout << endl;
 		colCount++;
 	}
 
@@ -844,9 +861,9 @@ void thueMorseAlgo(int r, int c) {
 				}
 			}
 
-			cout << thueMorse[i][j] << " ";
+			//cout << thueMorse[i][j] << " ";
 		}
-		cout << endl;
+		//cout << endl;
 	}
-	cout << endl;
+	//cout << endl;
 }

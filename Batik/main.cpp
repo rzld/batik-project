@@ -52,7 +52,7 @@ void drawFilledCircle(GLfloat x, GLfloat y, GLfloat radius);	/* https://gist.git
 
 //Main functions
 int main(int argc, char** argv) {
-	pattern = 1;
+	pattern = 2;
 	
 	rows = 5;
 	cols = 4;
@@ -879,7 +879,53 @@ void kawung() {
 	}
 	glEnd();
 
+	glColor3d(0.5, 0.0, 0.3);
+	glLineWidth(2.0);
 	drawFilledCircle(0.0, 0.0, 0.2);
+
+	//rectangle ornaments
+	//actually draws a triangle, but will be connected by another triangle.
+	glColor3d(0.5, 0.5, 0.0);
+	glLineWidth(2.0);
+
+	GLdouble offset = 0.2;
+	GLdouble rx = 0.0;
+	GLdouble ry = 1.0 - offset;
+	GLdouble rx2 = offset;
+	GLdouble ry2 = 1.0;
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < 2; j++) {
+			glBegin(GL_POLYGON);
+			if (i == 0) {
+				/*cout << -rx2 << " " << ry2 << endl;
+				cout << rx << " " << ry << endl;
+				cout << rx2 << " " << ry2 << endl;*/
+				glVertex2d(-rx2, ry2);
+				glVertex2d(rx, ry);
+				glVertex2d(rx2, ry2);
+
+				ry *= -1;
+				ry2 *= -1;
+			}
+			if (i == 1) {
+				/*cout << rx2 << " " << -ry2 << endl;
+				cout << rx << " " << ry << endl;
+				cout << rx2 << " " << ry2 << endl;*/
+				glVertex2d(rx2, -ry2);
+				glVertex2d(rx, ry);
+				glVertex2d(rx2, ry2);
+
+				rx *= -1;
+				rx2 *= -1;
+			}
+			/*cout << endl;*/
+			glEnd();
+		}
+		rx = 1.0 - offset;
+		ry = 0.0;
+		rx2 = 1.0;
+		ry2 = offset;
+	}
 
 	glFlush();
 }

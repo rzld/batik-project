@@ -16,6 +16,8 @@
 using namespace std;
 using namespace glm;
 
+#define PI 3.14
+
 //GLfloat ctrlPoints[4][3] = {
 //	{-4.0, -3.0, 0.0}, {0.0, 0.0, 0.0},
 //	{4.0, -3.0, 0.0}};
@@ -31,7 +33,7 @@ vector<vector<curvePoints>> curvePts;
 vector<vec3> startPoint, midPoint, endPoint;
 vector<vector<vec3>> points;
 vector<vector<int>> thueMorse;
-int iterations, rows, cols, tmRandomX, tmRandomY;
+int iterations, rows, cols, tmRandomX, tmRandomY, pattern;
 double edge;
 
 //Functions
@@ -46,14 +48,17 @@ void drawLittleSpiral(double a, double b);
 void thueMorseAlgo(int r, int c); 
 void megamendung(int type);
 void kawung();
+void drawFilledCircle(GLfloat x, GLfloat y, GLfloat radius);	/* https://gist.github.com/strife25/803118 */
 
 //Main functions
 int main(int argc, char** argv) {
+	pattern = 1;
+	
 	rows = 5;
 	cols = 4;
 	edge = 40.0;
 
-	thueMorseAlgo(edge, edge);
+	thueMorseAlgo(edge + 10.0, edge + 10.0);
 
 	srand(time(NULL));
 	tmRandomX = rand() % (int)edge + 1;
@@ -110,131 +115,134 @@ void init(void) {
 
 void display(void) {
 	init();
+	
+	if (pattern == 1) {
+		/* megamendung test 2 */
+		int nextRow = (edge * 2) / (rows - 1);
+		int nextCol = (edge * 2) / (cols - 1);
+		int rowCount, colCount, x3, y3, ty;
+		vec3 color(1.0, 1.0, 1.0);
+		float scaleX, scaleY;
+		//cout << nextRow << endl << nextCol << endl;
 
-	/* kawung test */
-	double resize = 10.0;
-	for (double i = -edge; i <= edge; i+= resize*2) {
-		for (double j = -edge; j <= edge; j+= resize*2) {
-			glPushMatrix();
-			glTranslated((GLdouble)i, (GLdouble)j, 1.0);
-			glScaled(resize, resize, 1.0);
-			kawung();
-			glPopMatrix();
+		iterations = 4;			//randomize this
+		colCount = 0;
+		for (int i = 0; i < cols; i++) {
+			rowCount = 0;
+			x3 = -edge + (i * nextCol);			//not random
+
+			scaleX = 2.0;	//random
+			scaleY = 2.0;	//random
+			for (int j = 0; j < rows; j++) {
+				//random position
+				/*int ii = rand() % ((int)edge * 2) + 1;
+				int jj = rand() % ((int)edge * 2) + 1;
+				x3 = -edge + ii;
+				y3 = -edge + jj;
+				cout << ii << " " << jj << endl;*/
+
+				y3 = -edge + (j * nextRow);		//not random
+
+				if (thueMorse[i + tmRandomX][j + tmRandomY] == 0) {
+					ty = 2;
+				}
+				else if (thueMorse[i + tmRandomX][j + tmRandomY] == 1) {
+					ty = 1;
+				}
+				cout << thueMorse[i + tmRandomX][j + tmRandomY] << " ";
+
+				//cout << x3 << " " << y3 << endl;
+				glPushMatrix();
+				//for vertical patterns
+				glRotated(0.0, 0.0, 0.0, 1.0);
+				//move to new positions
+				glTranslated((GLdouble)x3, (GLdouble)y3, 0.0);
+				//scale to become smaller
+				glScaled((GLdouble)scaleX, (GLdouble)scaleY, 1.0);
+				//color the lines
+				glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
+				megamendung(ty);
+				glPopMatrix();
+				rowCount++;
+			}
+			cout << endl;
+			colCount++;
+		}
+
+		/* megamendung test 1 */
+		//to random: iterations, position, scale, rotation, color
+
+		//int x2, y2;
+		//int cloudN = 0;
+		//int k = edge / 4;
+		//int col = 0;
+		//int row, ty;
+		//vec3 color;				//randomize this
+
+		////regular tiles
+		//for (int i = -edge; i <= edge; i++) {
+		//	row = 0;
+		//	float scaleX = k/3;
+		//	float scaleY = k/3;
+		//	x2 = i + k;
+		//	for (int j = -edge; j <= edge; j++) {
+		//		y2 = j + k;
+		//		cloudN++;
+		//		if (cloudN % 2 == 0) {
+		//			scaleX *= -1.0;
+		//			//scaleY = -1.0;
+		//		}
+		//		else {
+		//			scaleX *= 1.0;
+		//			//scaleY = 1.0;
+		//		}
+
+		//		if (col % 2 > 0) {
+		//			y2 -= k;	//different y position for each row
+		//			color = vec3(0.0, 1.0, 0.0);
+		//			//ty = 1;
+		//		}
+		//		else {
+		//			color = vec3(1.0, 1.0, 0.0);
+		//			//ty = 2;
+		//		}
+
+		//		if (row % 2 == 0) ty = 1;
+		//		else if (row % 2 > 0) ty = 2;
+
+		//		glPushMatrix();
+		//		//for vertical patterns
+		//		glRotated(0.0, 0.0, 0.0, 1.0);
+		//		//move to new positions
+		//		glTranslated((GLdouble)x2, (GLdouble)y2, 0.0);
+		//		//scale to become smaller
+		//		glScaled((GLdouble)scaleX, (GLdouble)scaleY, 1.0);
+		//		//color the lines
+		//		glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
+		//		drawCloud(ty);
+		//		glPopMatrix();
+
+		//		j += k * 2;
+		//		scaleY *= -1.0;
+		//		row++;
+		//	}
+		//	i += k * 3;
+		//	col++;
+		//}
+	}
+	else if (pattern == 2) {
+		/* kawung test */
+		double resize = 10.0;
+		for (double i = -edge; i <= edge; i += resize * 2) {
+			for (double j = -edge; j <= edge; j += resize * 2) {
+				glPushMatrix();
+				glTranslated((GLdouble)i, (GLdouble)j, 1.0);
+				glScaled(resize, resize, 1.0);
+				kawung();
+				glPopMatrix();
+			}
 		}
 	}
-	
-	/* megamendung test 2 */
-	//int nextRow = (edge * 2) / (rows - 1);
-	//int nextCol = (edge * 2) / (cols - 1);
-	//int rowCount, colCount, x3, y3, ty;
-	//vec3 color(1.0, 1.0, 1.0);
-	//float scaleX, scaleY;
-	////cout << nextRow << endl << nextCol << endl;
-
-	//iterations = 4;			//randomize this
-	//colCount = 0;
-	//for (int i = 0; i < cols; i++) {
-	//	rowCount = 0;
-	//	x3 = -edge + (i * nextCol);			//not random
-
-	//	scaleX = 2.0;	//random
-	//	scaleY = 2.0;	//random
-	//	for (int j = 0; j < rows; j++) {
-	//		//random position
-	//		/*int ii = rand() % ((int)edge * 2) + 1;
-	//		int jj = rand() % ((int)edge * 2) + 1;
-	//		x3 = -edge + ii;
-	//		y3 = -edge + jj;
-	//		cout << ii << " " << jj << endl;*/
-
-	//		y3 = -edge + (j * nextRow);		//not random
-
-	//		if (thueMorse[i + tmRandomX][j + tmRandomY] == 0) {
-	//			ty = 2;
-	//		}
-	//		else if (thueMorse[i + tmRandomX][j + tmRandomY] == 1) {
-	//			ty = 1;
-	//		}
-	//		cout << thueMorse[i + tmRandomX][j + tmRandomY] << " ";
-
-	//		//cout << x3 << " " << y3 << endl;
-	//		glPushMatrix();
-	//		//for vertical patterns
-	//		glRotated(0.0, 0.0, 0.0, 1.0);
-	//		//move to new positions
-	//		glTranslated((GLdouble)x3, (GLdouble)y3, 0.0);
-	//		//scale to become smaller
-	//		glScaled((GLdouble)scaleX, (GLdouble)scaleY, 1.0);
-	//		//color the lines
-	//		glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
-	//		megamendung(ty);
-	//		glPopMatrix();
-	//		rowCount++;
-	//	}
-	//	cout << endl;
-	//	colCount++;
-	//}
-
-	/* megamendung test 1 */
-	//to random: iterations, position, scale, rotation, color
-	
-	//int x2, y2;
-	//int cloudN = 0;
-	//int k = edge / 4;
-	//int col = 0;
-	//int row, ty;
-	//vec3 color;				//randomize this
-
-	////regular tiles
-	//for (int i = -edge; i <= edge; i++) {
-	//	row = 0;
-	//	float scaleX = k/3;
-	//	float scaleY = k/3;
-	//	x2 = i + k;
-	//	for (int j = -edge; j <= edge; j++) {
-	//		y2 = j + k;
-	//		cloudN++;
-	//		if (cloudN % 2 == 0) {
-	//			scaleX *= -1.0;
-	//			//scaleY = -1.0;
-	//		}
-	//		else {
-	//			scaleX *= 1.0;
-	//			//scaleY = 1.0;
-	//		}
-
-	//		if (col % 2 > 0) {
-	//			y2 -= k;	//different y position for each row
-	//			color = vec3(0.0, 1.0, 0.0);
-	//			//ty = 1;
-	//		}
-	//		else {
-	//			color = vec3(1.0, 1.0, 0.0);
-	//			//ty = 2;
-	//		}
-
-	//		if (row % 2 == 0) ty = 1;
-	//		else if (row % 2 > 0) ty = 2;
-
-	//		glPushMatrix();
-	//		//for vertical patterns
-	//		glRotated(0.0, 0.0, 0.0, 1.0);
-	//		//move to new positions
-	//		glTranslated((GLdouble)x2, (GLdouble)y2, 0.0);
-	//		//scale to become smaller
-	//		glScaled((GLdouble)scaleX, (GLdouble)scaleY, 1.0);
-	//		//color the lines
-	//		glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
-	//		drawCloud(ty);
-	//		glPopMatrix();
-
-	//		j += k * 2;
-	//		scaleY *= -1.0;
-	//		row++;
-	//	}
-	//	i += k * 3;
-	//	col++;
-	//}
 
 	/* megamendung test 0 */
 	/*glPushMatrix();
@@ -343,6 +351,8 @@ void reshape(int w, int h) {
 }
 
 void megamendung(int type) {
+	vector<vec3> mendungPts;
+
 	if (type == 1) {
 		//iterations = 4;			//number of curve iterations
 		double offset = 1.0;		//offset for midpoints - Y distance from centre
@@ -378,7 +388,7 @@ void megamendung(int type) {
 		//glColor3d(1.0, 1.0, 1.0);
 		glLineWidth(1.5);
 		//drawLittleSpiral(0.5, 0.5);
-		glBegin(GL_LINE_STRIP);
+		//glBegin(GL_LINE_STRIP);
 
 		for (int j = 0; j < iterations; j++) {
 			//variable
@@ -419,11 +429,6 @@ void megamendung(int type) {
 				bezierResults = getBezier(curve_temp, a, b);
 				points[j][i] = bezierResults;
 
-				//cout << points[j][i].x << " " << points[j][i].y << " " << points[j][i].z << endl;
-
-				//draw
-				//glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
-
 				//change variable
 				a -= 1.0 / nPoints;
 				b = 1.0 - a;
@@ -460,9 +465,10 @@ void megamendung(int type) {
 				//get bezier
 				for (int i = 0; i < nPoints; i++) {
 					bezierResults = getBezier(curve_temp, e, f);
+					mendungPts.push_back(bezierResults);
 
 					//draw
-					glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+					//glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
 
 					//change variables
 					e -= 1.0 / nPoints;
@@ -483,9 +489,10 @@ void megamendung(int type) {
 				//get bezier
 				for (int i = 0; i < 50; i++) {
 					bezierResults = getBezier(curve_temp, e, f);
+					mendungPts.push_back(bezierResults);
 
 					//draw
-					glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+					//glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
 
 					//change variables
 					e -= 1.0 / nPoints;
@@ -500,17 +507,16 @@ void megamendung(int type) {
 				for (int i = 0; i < nPoints; i++) {
 					//get the points of bezier curve
 					bezierResults = getBezier(curve_temp, a, b);
+					mendungPts.push_back(bezierResults);
 					//points[j][i] += bezierResults;
 
 					//draw
-					glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+					//glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
 
 					//change variable
 					a -= 1.0 / nPoints;
 					b = 1.0 - a;
 				}
-
-
 			}
 
 			int k_ = 0;
@@ -546,9 +552,10 @@ void megamendung(int type) {
 				//loop through number of points, count x y z
 				for (int m = 0; m < nPoints; m++) {
 					bezierResults = getBezier(curve_temp, c, d);
+					mendungPts.push_back(bezierResults);
 
 					//draw
-					glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+					//glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
 
 					//change variables
 					c -= 1.0 / nPoints;
@@ -591,9 +598,10 @@ void megamendung(int type) {
 						curve_temp.end = spirEnd;*/
 
 						bezierResults = getBezier(curve_temp, e, f);
+						mendungPts.push_back(bezierResults);
 
 						//draw
-						glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+						//glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
 
 						//change variables
 						e -= 1.0 / nPoints;
@@ -619,9 +627,10 @@ void megamendung(int type) {
 						curve_temp.end = spirEnd;*/
 
 						bezierResults = getBezier(curve_temp, e, f);
+						mendungPts.push_back(bezierResults);
 
 						//draw
-						glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+						//glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
 
 						//change variables
 						e -= 1.0 / nPoints;
@@ -675,8 +684,8 @@ void megamendung(int type) {
 
 		//glScaled(3.0, 3.0, 1.0);
 		//glColor3d(1.0, 1.0, 1.0);
-		glLineWidth(2.0);
-		glBegin(GL_LINE_STRIP);
+		//glLineWidth(2.0);
+		//glBegin(GL_LINE_STRIP);
 
 		for (int i = 0; i < iterations2; i++) {
 			if (i < 2 || i > 4) offset = 1.0;
@@ -708,7 +717,8 @@ void megamendung(int type) {
 				points[i][j] = bezierResults;
 
 				if (i < 2 || i > 4) {
-					glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+					mendungPts.push_back(bezierResults);
+					//glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
 				}
 
 				a -= 1.0 / nPoints;
@@ -755,9 +765,10 @@ void megamendung(int type) {
 					//loop through number of points, count x y z
 					for (int m = 0; m < nPoints; m++) {
 						bezierResults = getBezier(curve_temp, c, d);
+						mendungPts.push_back(bezierResults);
 
 						//draw
-						glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+						//glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
 
 						//change variables
 						c -= 1.0 / nPoints;
@@ -766,13 +777,27 @@ void megamendung(int type) {
 				}
 			}
 		}
-
-		/*glEnd();
-		glFlush();*/
 		//**end of cloud version 2
 	}
 
+	//cout << mendungPts.size << endl;
+	glColor3d(0.5, 0.0, 0.3);
+	//glLineWidth(2.0);
+	glBegin(GL_POLYGON);
+	for (int i = 0; i < mendungPts.size(); i++) {
+		glVertex2d(mendungPts[i].x, mendungPts[i].y);
+	}
 	glEnd();
+
+	glColor3d(1.0, 1.0, 1.0);
+	glLineWidth(3.0);
+	glBegin(GL_LINE_STRIP);
+	for (int i = 0; i < mendungPts.size(); i++) {
+		glVertex2d(mendungPts[i].x, mendungPts[i].y);
+	}
+	glEnd();
+
+	//glEnd();
 	glFlush();
 }
 
@@ -791,10 +816,12 @@ void kawung() {
 	endPoint[2] = vec3(-kawungSize, -kawungSize, 0.0);
 	endPoint[3] = vec3(-kawungSize, kawungSize, 0.0);
 
+	//rectangle filled
 	glColor3d(0.0, 0.3, 0.1);
 	glRectd(kawungSize, kawungSize, -kawungSize, -kawungSize);
 
-	glColor3d(1.0, 1.0, 1.0);
+	//rectangle border
+	/*glColor3d(1.0, 1.0, 1.0);
 	glLineWidth(2.0);
 	glBegin(GL_LINE_STRIP);
 	glVertex2d(kawungSize, kawungSize);
@@ -802,8 +829,7 @@ void kawung() {
 	glVertex2d(-kawungSize, -kawungSize);
 	glVertex2d(-kawungSize, kawungSize);
 	glVertex2d(kawungSize, kawungSize);
-	glEnd();
-	glFlush();
+	glEnd();*/
 
 	for (int i = 0; i < endPoint.size(); i++) {
 		temp.start = centre;
@@ -844,15 +870,17 @@ void kawung() {
 		glVertex2d(kawungPts[i].x, kawungPts[i].y);
 	}
 	glEnd();
-	glFlush();
 
-	glColor3d(1.0, 1.0, 1.0);
+	glColor3d(0.5, 0.0, 0.3);
 	glLineWidth(2.0);
 	glBegin(GL_LINE_STRIP);
 	for (int i = 0; i < kawungPts.size(); i++) {
 		glVertex2d(kawungPts[i].x, kawungPts[i].y);
 	}
 	glEnd();
+
+	drawFilledCircle(0.0, 0.0, 0.2);
+
 	glFlush();
 }
 
@@ -961,4 +989,18 @@ void thueMorseAlgo(int r, int c) {
 		//cout << endl;
 	}
 	//cout << endl;
+}
+
+//https://gist.github.com/strife25/803118
+void drawFilledCircle(GLfloat x, GLfloat y, GLfloat radius) {
+	int triangleAmount = 20;		//number of triangles used
+
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex2f(x, y);	//centre
+	for (int i = 0; i <= triangleAmount; i++) {
+		glVertex2f(
+			x + (radius*cos(i*2.0f*PI / triangleAmount)), 
+			y + (radius*sin(i*2.0f*PI / triangleAmount)));
+	}
+	glEnd();
 }

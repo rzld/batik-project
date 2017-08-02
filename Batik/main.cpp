@@ -244,85 +244,6 @@ void display(void) {
 		}
 	}
 
-	/* megamendung test 0 */
-	/*glPushMatrix();
-	glTranslated(-20.0, 20.0, 0.0);
-	glScaled(-1.0, -1.0, 1.0);
-	drawCloud();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslated(0.0, 20.0, 0.0);
-	glScaled(1.5, -1.5, 1.0);
-	drawCloud();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslated(20.0, 20.0, 0.0);
-	glScaled(-1.0, -1.0, 1.0);
-	drawCloud();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslated(-10.0, 10.0, 0.0);
-	glScaled(-1.5, 1.5, 1.0);
-	drawCloud();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslated(10.0, 10.0, 1.0);
-	glScaled(1.5, 1.5, 1.0);
-	drawCloud();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslated(-20.0, 0.0, 0.0);
-	glScaled(-1.0, 1.0, 1.0);
-	drawCloud();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslated(0.0, 0.0, 0.0);
-	glScaled(1.5, 1.5, 1.0);
-	drawCloud();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslated(20.0, 0.0, 0.0);
-	glScaled(-1.0, 1.0, 1.0);
-	drawCloud();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslated(-10.0, -10.0, 1.0);
-	glScaled(-1.5, -1.5, 1.0);
-	drawCloud();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslated(10.0, -10.0, 1.0);
-	glScaled(1.5, -1.5, 1.0);
-	drawCloud();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslated(-20.0, -20.0, 1.0);
-	glScaled(-1.0, -1.0, 1.0);
-	drawCloud();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslated(0.0, -20.0, 1.0);
-	glScaled(1.5, -1.5, 1.0);
-	drawCloud();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslated(20.0, -20.0, 1.0);
-	glScaled(-1.0, -1.0, 1.0);
-	drawCloud();
-	glPopMatrix();*/
-
 	glutSwapBuffers();
 }
 
@@ -780,17 +701,17 @@ void megamendung(int type) {
 		//**end of cloud version 2
 	}
 
-	//cout << mendungPts.size << endl;
-	glColor3d(0.5, 0.0, 0.3);
-	//glLineWidth(2.0);
+	//coloured cloud
+	glColor3d(0.0, 0.5, 0.3);
 	glBegin(GL_POLYGON);
 	for (int i = 0; i < mendungPts.size(); i++) {
 		glVertex2d(mendungPts[i].x, mendungPts[i].y);
 	}
 	glEnd();
 
-	glColor3d(1.0, 1.0, 1.0);
-	glLineWidth(3.0);
+	//cloud outline
+	glColor3d(0.0, 0.3, 0.5);
+	glLineWidth(2.0);
 	glBegin(GL_LINE_STRIP);
 	for (int i = 0; i < mendungPts.size(); i++) {
 		glVertex2d(mendungPts[i].x, mendungPts[i].y);
@@ -798,7 +719,7 @@ void megamendung(int type) {
 	glEnd();
 
 	//glEnd();
-	glFlush();
+	//glFlush();
 }
 
 void kawung() {
@@ -844,11 +765,6 @@ void kawung() {
 				temp.end = centre;
 			}
 
-			/*cout << temp.start.x << "," << temp.start.y << " ";
-			cout << temp.mid.x << "," << temp.mid.y << " ";
-			cout << temp.end.x << "," << temp.end.y << " ";
-			cout << endl;*/
-
 			a = 1.0;
 			b = 1.0 - a;
 
@@ -864,14 +780,16 @@ void kawung() {
 
 	//cout << kawungPts.size();
 
-	glColor3d(0.3, 0.0, 0.1);
+	//kawung with colour
+	glColor3d(0.3, 0.0, 0.1);	//different colour between iterations
 	glBegin(GL_POLYGON);
 	for (int i = 0; i < kawungPts.size(); i++) {
 		glVertex2d(kawungPts[i].x, kawungPts[i].y);
 	}
 	glEnd();
 
-	glColor3d(0.5, 0.0, 0.3);
+	//kawung outline
+	glColor3d(0.5, 0.0, 0.3);	//different colour between iterations
 	glLineWidth(2.0);
 	glBegin(GL_LINE_STRIP);
 	for (int i = 0; i < kawungPts.size(); i++) {
@@ -879,15 +797,31 @@ void kawung() {
 	}
 	glEnd();
 
+	//big circles in the middle
 	glColor3d(0.5, 0.0, 0.3);
 	glLineWidth(2.0);
 	drawFilledCircle(0.0, 0.0, 0.2);
+	drawFilledCircle(-1.0, -1.0, 0.2);
+	
+	//small circles/dots 
+	vector<vec3> dotsPts;
+	dotsPts.resize(4);
+	dotsPts[0] = vec3(kawungSize / 3, kawungSize / 3, 0.0);
+	dotsPts[1] = vec3(kawungSize / 3, -kawungSize / 3, 0.0);
+	dotsPts[2] = vec3(-kawungSize / 3, -kawungSize / 3, 0.0);
+	dotsPts[3] = vec3(-kawungSize / 3, kawungSize / 3, 0.0);
+
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < dotsPts.size(); j++) {
+			drawFilledCircle(dotsPts[j].x, dotsPts[j].y, 0.05);
+			dotsPts[j] *= 2.0;
+		}
+	}
 
 	//rectangle ornaments
 	//actually draws a triangle, but will be connected by another triangle.
 	glColor3d(0.5, 0.5, 0.0);
 	glLineWidth(2.0);
-
 	GLdouble offset = 0.2;
 	GLdouble rx = 0.0;
 	GLdouble ry = 1.0 - offset;
@@ -927,7 +861,7 @@ void kawung() {
 		ry2 = offset;
 	}
 
-	glFlush();
+	//glFlush();
 }
 
 vec3 findEndPoint(vec3 point, float offset) {

@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
 	
 	rows = 5;
 	cols = 4;
-	edge = 40.0;
+	edge = 30.0;
 
 	thueMorseAlgo(edge + 10.0, edge + 10.0);
 
@@ -122,52 +122,72 @@ void display(void) {
 		iterations = 4;
 		vec3 color(1.0, 1.0, 1.0);
 
-		GLdouble randx = -edge + (rand() % 10 + 1);
-		GLdouble randy = edge - (rand() % 10 + 1);
-		cout << randx << " " << randy << endl;
+		/*GLdouble randx = -edge + (rand() % 10 + 1);
+		GLdouble randy = edge - (rand() % 10 + 1);*/
+		//cout << randx << " " << randy << endl;
 
-		GLdouble scaleX = 3.0;
-		GLdouble scaleY = 3.0;
+		GLdouble scaleX = 2.0;
+		GLdouble scaleY = 2.0;
 
-		int ty = 1;
+		int ty;
 
-		glPushMatrix();
-		//for vertical patterns
-		glRotated(0.0, 0.0, 0.0, 1.0);
-		//move to new positions
-		glTranslated(0.0, 0.0, 0.0);
-		//scale to become smaller
-		glScaled(scaleX, scaleY, 1.0);
-		//color the lines
-		glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
-		megamendung(ty);
-		glPopMatrix();
+		//glPushMatrix();
+		////for vertical patterns
+		//glRotated(0.0, 0.0, 0.0, 1.0);
+		////move to new positions
+		//glTranslated(0.0, 0.0, 0.0);
+		////scale to become smaller
+		//glScaled(scaleX, scaleY, 1.0);
+		////color the lines
+		//glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
+		//megamendung(ty);
+		//glPopMatrix();
 
-		for (int i = 0; i < edge+10; i++) {
-			for (int j = 0; j < edge + 10; j++) {
-				int newx = randx + cloudMaxX + rand() % 20;
-				cout << newx << " " << randy << endl;
+		for (int i = 0; i < 10; i++) {
+			GLdouble randx = -edge + (rand() % ((int)edge * 2));
+			GLdouble randy = edge - (rand() % ((int)edge * 2));
+			cout << randx << " " << randy << endl;
 
-				glPushMatrix();
-				//for vertical patterns
-				glRotated(0.0, 0.0, 0.0, 1.0);
-				//move to new positions
-				glTranslated(newx, randy, 0.0);
-				//scale to become smaller
-				glScaled(scaleX, scaleY, 1.0);
-				//color the lines
-				glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
-				megamendung(ty);
-				glPopMatrix();
+			ty = rand() % 2;
 
-				//int yy = rand() % 20 + 10;
-				randy += cloudMinY;
-				j -= cloudMinY;
-			}
-			//int xx = rand() % 20;
-			i += cloudMaxX * scaleX;
-			randx += cloudMaxX * scaleX;
+			glPushMatrix();
+			//for vertical patterns
+			glRotated(0.0, 0.0, 0.0, 1.0);
+			//move to new positions
+			glTranslated(randx, randy, 0.0);
+			//scale to become smaller
+			glScaled(scaleX, scaleY, 1.0);
+			//color the lines
+			glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
+			megamendung(ty);
+			glPopMatrix();
 		}
+
+		//for (int i = 0; i < edge+10; i++) {
+		//	for (int j = 0; j < edge + 10; j++) {
+		//		int newx = randx + rand() % 20;
+		//		cout << newx << " " << randy << endl;
+
+		//		glPushMatrix();
+		//		//for vertical patterns
+		//		glRotated(0.0, 0.0, 0.0, 1.0);
+		//		//move to new positions
+		//		glTranslated(newx, randy, 0.0);
+		//		//scale to become smaller
+		//		glScaled(scaleX, scaleY, 1.0);
+		//		//color the lines
+		//		glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
+		//		megamendung(ty);
+		//		glPopMatrix();
+
+		//		//int yy = rand() % 20 + 10;
+		//		randy += cloudMinY * scaleY;
+		//		j -= cloudMinY * scaleY;
+		//	}
+		//	//int xx = rand() % 20;
+		//	i += cloudMaxX * scaleX;
+		//	randx += cloudMaxX * scaleX;
+		//}
 
 		/* megamendung test 2 */
 		//int nextRow = (edge * 2) / (rows - 1);
@@ -326,7 +346,7 @@ void reshape(int w, int h) {
 void megamendung(int type) {
 	vector<vec3> mendungPts;
 
-	if (type == 1) {
+	if (type == 0) {
 		//iterations = 4;			//number of curve iterations
 		double offset = 1.0;		//offset for midpoints - Y distance from centre
 		int nPoints = 50;		//number of points
@@ -646,7 +666,7 @@ void megamendung(int type) {
 			div += 2;
 		}
 	}
-	else if (type == 2) {
+	else if (type == 1) {
 		//**cloud version 2
 		int iterations2 = 7;
 		int nPoints = 50;		//number of points
@@ -799,7 +819,7 @@ void megamendung(int type) {
 	/*cout << "**" << endl;
 	cout << cloudMinY << " " << cloudMaxY << endl;*/
 
-	glBegin(GL_LINE_STRIP);
+	/*glBegin(GL_LINE_STRIP);
 	glColor3d(1.0, 1.0, 1.0);
 	glLineWidth(2.0);
 	glVertex2d((GLdouble)cloudMinX, 0.0);
@@ -811,7 +831,7 @@ void megamendung(int type) {
 	glLineWidth(2.0);
 	glVertex2d((GLdouble)0.0, cloudMinY);
 	glVertex2d((GLdouble)0.0, cloudMaxY);
-	glEnd();
+	glEnd();*/
 
 	//glEnd();
 	//glFlush();

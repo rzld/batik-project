@@ -49,11 +49,12 @@ void drawLittleSpiral(double a, double b);
 void thueMorseAlgo(int r, int c); 
 void megamendung(int type);
 void kawung();
+vector<vec3> drawTeardrop(vec3 start, vec3 end, float widthOff);
 void drawFilledCircle(GLfloat x, GLfloat y, GLfloat radius);	/* https://gist.github.com/strife25/803118 */
 
 //Main functions
 int main(int argc, char** argv) {
-	pattern = 1;
+	pattern = 2;
 	
 	rows = 5;
 	cols = 4;
@@ -841,16 +842,13 @@ void kawung() {
 	double kawungSize = 1.0;
 	double xx, yy, a, b;
 	curvePoints temp;
-	vec3 bezierResults;
+	vec3 bezierResults, maxSize;
 	vec3 centre(0.0, 0.0, 0.0);
 	vector<vec3> kawungPts;
 	int nPoints = 50;
-	
-	endPoint.resize(4);
-	endPoint[0] = vec3(kawungSize, kawungSize, 0.0);
-	endPoint[1] = vec3(kawungSize, -kawungSize, 0.0);
-	endPoint[2] = vec3(-kawungSize, -kawungSize, 0.0);
-	endPoint[3] = vec3(-kawungSize, kawungSize, 0.0);
+	GLdouble angle;
+
+	maxSize = vec3(kawungSize, kawungSize, 0.0);
 
 	//rectangle filled
 	glColor3d(0.0, 0.3, 0.1);
@@ -867,50 +865,35 @@ void kawung() {
 	glVertex2d(kawungSize, kawungSize);
 	glEnd();*/
 
-	for (int i = 0; i < endPoint.size(); i++) {
-		temp.start = centre;
-		temp.end = endPoint[i];
-		for (int j = 0; j < 2; j++) {
-			if (j == 0) {
-				temp.mid = vec3(0.0, temp.end.y, 0.0);
-			}
-			else {
-				temp.mid = vec3(temp.end.x, 0.0, 0.0);
-				temp.start = temp.end;
-				temp.end = centre;
-			}
-
-			a = 1.0;
-			b = 1.0 - a;
-
-			for (int k = 0; k < nPoints; k++) {
-				bezierResults = getBezier(temp, a, b);
-				//glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
-				kawungPts.push_back(bezierResults);
-				a -= 1.0 / nPoints;
-				b = 1.0 - a;
-			}
-		}
-	}
-
-	//cout << kawungPts.size();
+	kawungPts = drawTeardrop(centre, maxSize, 0.0);
+	//cout << kawungPts.size() << endl;
 
 	//kawung with colour
 	glColor3d(0.3, 0.0, 0.1);	//different colour between iterations
-	glBegin(GL_POLYGON);
-	for (int i = 0; i < kawungPts.size(); i++) {
-		glVertex2d(kawungPts[i].x, kawungPts[i].y);
+	angle = 0.0;
+	for (int j = 0; j < 4; j++) {
+		glRotated(angle, 0.0, 0.0, 1.0);
+		glBegin(GL_POLYGON);
+		for (int i = 0; i < kawungPts.size(); i++) {
+			glVertex2d(kawungPts[i].x, kawungPts[i].y);
+		}
+		glEnd();
+		angle += 90.0;
 	}
-	glEnd();
 
 	//kawung outline
 	glColor3d(0.5, 0.0, 0.3);	//different colour between iterations
 	glLineWidth(2.0);
-	glBegin(GL_LINE_STRIP);
-	for (int i = 0; i < kawungPts.size(); i++) {
-		glVertex2d(kawungPts[i].x, kawungPts[i].y);
+	angle = 0.0;
+	for (int j = 0; j < 4; j++) {
+		glRotated(angle, 0.0, 0.0, 1.0);
+		glBegin(GL_LINE_STRIP);
+		for (int i = 0; i < kawungPts.size(); i++) {
+			glVertex2d(kawungPts[i].x, kawungPts[i].y);
+		}
+		glEnd();
+		angle += 90.0;
 	}
-	glEnd();
 
 	//big circles in the middle
 	glColor3d(0.5, 0.0, 0.3);
@@ -946,9 +929,6 @@ void kawung() {
 		for (int j = 0; j < 2; j++) {
 			glBegin(GL_POLYGON);
 			if (i == 0) {
-				/*cout << -rx2 << " " << ry2 << endl;
-				cout << rx << " " << ry << endl;
-				cout << rx2 << " " << ry2 << endl;*/
 				glVertex2d(-rx2, ry2);
 				glVertex2d(rx, ry);
 				glVertex2d(rx2, ry2);
@@ -957,9 +937,6 @@ void kawung() {
 				ry2 *= -1;
 			}
 			if (i == 1) {
-				/*cout << rx2 << " " << -ry2 << endl;
-				cout << rx << " " << ry << endl;
-				cout << rx2 << " " << ry2 << endl;*/
 				glVertex2d(rx2, -ry2);
 				glVertex2d(rx, ry);
 				glVertex2d(rx2, ry2);
@@ -977,6 +954,41 @@ void kawung() {
 	}
 
 	//glFlush();
+}
+
+vector<vec3> drawTeardrop(vec3 start, vec3 end, float widthOff) {
+	double a, b;
+	curvePoints temp;
+	int nPoints = 50;
+	vec3 bezierResults;
+	vector<vec3> temp2;
+
+	temp.start = start;
+	temp.end = end;
+	for (int j = 0; j < 2; j++) {
+		if (j == 0) {
+			temp.mid = vec3(0.0 + widthOff, temp.end.y - widthOff, 0.0);
+		}
+		else {
+			temp.mid = vec3(temp.end.x - widthOff, 0.0 + widthOff, 0.0);
+			temp.start = temp.end;
+			temp.end = start;
+		}
+
+		a = 1.0;
+		b = 1.0 - a;
+
+		for (int k = 0; k < nPoints; k++) {
+			bezierResults = getBezier(temp, a, b);
+			//glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
+			temp2.push_back(bezierResults);
+			a -= 1.0 / nPoints;
+			b = 1.0 - a;
+		}
+	}
+
+	return temp2;
+	//cout << temp2.size() << endl;
 }
 
 vec3 findEndPoint(vec3 point, float offset) {

@@ -49,12 +49,14 @@ void drawLittleSpiral(double a, double b);
 void thueMorseAlgo(int r, int c); 
 void megamendung(int type);
 void kawung();
-vector<vec3> drawTeardrop(vec3 start, vec3 end, float widthOff);
+void truntum(int type);
+void drawFlowers();
+void drawLeaf(vec3 start, vec3 end, float widthOff);
 void drawFilledCircle(GLfloat x, GLfloat y, GLfloat radius);	/* https://gist.github.com/strife25/803118 */
 
 //Main functions
 int main(int argc, char** argv) {
-	pattern = 2;
+	pattern = 3;
 	
 	rows = 5;
 	cols = 4;
@@ -66,16 +68,6 @@ int main(int argc, char** argv) {
 	tmRandomX = rand() % (int)edge + 1;
 	tmRandomY = rand() % (int)edge + 1;
 	cout << tmRandomX << " " << tmRandomY << endl;
-
-	/*for (int i = -edge; i <= edge; i += nextCol) {
-		rowCount = 0;
-		for (int j = -edge; j <= edge; j += nextRow) {
-			cout << i << " " << j << endl;
-			rowCount += 1;
-		}
-		colCount += 1;
-	}
-	cout << endl;*/
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
@@ -314,6 +306,25 @@ void display(void) {
 				kawung();
 				glPopMatrix();
 			}
+		}
+	}
+	else if (pattern == 3) {
+		//truntum();
+		double resize = 3.0;
+		int ii, jj;
+		ii = 0;
+
+		for (double i = -edge; i <= edge; i += resize * 4) {
+			jj = 0;
+			for (double j = -edge; j <= edge; j += resize * 4) {
+				glPushMatrix();
+				glTranslated((GLdouble)i, (GLdouble)j, 1.0);
+				glScaled(resize, resize, 1.0);
+				truntum((ii+jj)%2);
+				glPopMatrix();
+				jj++;
+			}
+			ii++;
 		}
 	}
 
@@ -865,7 +876,7 @@ void kawung() {
 	glVertex2d(kawungSize, kawungSize);
 	glEnd();*/
 
-	kawungPts = drawTeardrop(centre, maxSize, 0.0);
+	//kawungPts = drawTeardrop(centre, maxSize, 0.0);
 	//cout << kawungPts.size() << endl;
 
 	//kawung with colour
@@ -874,9 +885,7 @@ void kawung() {
 	for (int j = 0; j < 4; j++) {
 		glRotated(angle, 0.0, 0.0, 1.0);
 		glBegin(GL_POLYGON);
-		for (int i = 0; i < kawungPts.size(); i++) {
-			glVertex2d(kawungPts[i].x, kawungPts[i].y);
-		}
+		drawLeaf(centre, maxSize, 0.0);
 		glEnd();
 		angle += 90.0;
 	}
@@ -888,9 +897,7 @@ void kawung() {
 	for (int j = 0; j < 4; j++) {
 		glRotated(angle, 0.0, 0.0, 1.0);
 		glBegin(GL_LINE_STRIP);
-		for (int i = 0; i < kawungPts.size(); i++) {
-			glVertex2d(kawungPts[i].x, kawungPts[i].y);
-		}
+		drawLeaf(centre, maxSize, 0.0);
 		glEnd();
 		angle += 90.0;
 	}
@@ -956,21 +963,63 @@ void kawung() {
 	//glFlush();
 }
 
-vector<vec3> drawTeardrop(vec3 start, vec3 end, float widthOff) {
+void truntum(int type) {
+	vec3 centre(0.0, 0.0, 0.0);
+	GLfloat radius;
+
+	radius = 0.3;
+
+	if (type == 0) {
+		drawFilledCircle(centre.x, centre.y, radius);
+		//glColor3d(1.0, 1.0, 1.0);
+		drawFlowers();
+	}
+	else if (type == 1) {
+		GLfloat circDist = 1.2;
+		drawFilledCircle(centre.x, centre.y, radius);
+		drawFilledCircle(centre.x + circDist, centre.y + circDist, radius - 0.2);
+		drawFilledCircle(centre.x + circDist, centre.y - circDist, radius - 0.2);
+		drawFilledCircle(centre.x - circDist, centre.y - circDist, radius - 0.2);
+		drawFilledCircle(centre.x - circDist, centre.y + circDist, radius - 0.2);
+	}
+}
+
+void drawFlowers() {
+	vec3 centre(0.0, 0.0, 0.0);
+	vec3 start(centre.x + 0.3, centre.y + 0.3, 0.0);
+	vec3 end(1.0, 1.0, 0.0);
+	GLfloat angle;
+
+	angle = 0.0;
+
+	for (int i = 0; i < 8; i++) {
+		glRotated(angle, 0.0, 0.0, 1.0);
+		glBegin(GL_POLYGON);
+		drawLeaf(start, end, 0.2);
+		glEnd();
+		glBegin(GL_LINE_STRIP);
+		glVertex2d(end.x, end.y);
+		glVertex2d(end.x + 1.2, end.x + 1.2);
+		glEnd();
+		angle += 45.0;
+	}
+}
+
+void drawLeaf(vec3 start, vec3 end, float widthOff) {
 	double a, b;
 	curvePoints temp;
 	int nPoints = 50;
 	vec3 bezierResults;
-	vector<vec3> temp2;
+	//vector<vec3> temp2;
 
 	temp.start = start;
 	temp.end = end;
 	for (int j = 0; j < 2; j++) {
 		if (j == 0) {
-			temp.mid = vec3(0.0 + widthOff, temp.end.y - widthOff, 0.0);
+			temp.mid = vec3(temp.start.x + widthOff, temp.end.y - widthOff, 0.0);
 		}
 		else {
-			temp.mid = vec3(temp.end.x - widthOff, 0.0 + widthOff, 0.0);
+			temp.mid = vec3(temp.end.x - widthOff, temp.start.y + widthOff, 0.0);
 			temp.start = temp.end;
 			temp.end = start;
 		}
@@ -980,15 +1029,12 @@ vector<vec3> drawTeardrop(vec3 start, vec3 end, float widthOff) {
 
 		for (int k = 0; k < nPoints; k++) {
 			bezierResults = getBezier(temp, a, b);
-			//glVertex3d(bezierResults.x, bezierResults.y, bezierResults.z);
-			temp2.push_back(bezierResults);
+			glVertex2d(bezierResults.x, bezierResults.y);
+			//temp2.push_back(bezierResults);
 			a -= 1.0 / nPoints;
 			b = 1.0 - a;
 		}
 	}
-
-	return temp2;
-	//cout << temp2.size() << endl;
 }
 
 vec3 findEndPoint(vec3 point, float offset) {

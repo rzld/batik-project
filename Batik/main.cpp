@@ -18,14 +18,16 @@ using namespace glm;
 
 #define PI 3.14
 
-//GLfloat ctrlPoints[4][3] = {
-//	{-4.0, -3.0, 0.0}, {0.0, 0.0, 0.0},
-//	{4.0, -3.0, 0.0}};
-
 struct curvePoints {
 	vec3 start;
 	vec3 mid;
 	vec3 end;
+};
+
+struct colour {
+	vec3 main;
+	vec3 accent;
+	vec3 background;
 };
 
 //Global variables
@@ -33,14 +35,19 @@ vector<vector<curvePoints>> curvePts;
 vector<vec3> startPoint, midPoint, endPoint;
 vector<vector<vec3>> points;
 vector<vector<int>> thueMorse;
+vector<colour> colours;
 int iterations, rows, cols, tmRandomX, tmRandomY, pattern;
 double cloudMaxX, cloudMaxY, cloudMinX, cloudMinY;
 double edge;
+GLfloat bgcolR, bgcolG, bgcolB;
+GLfloat mcolR, mcolG, mcolB;
+GLfloat acolR, acolG, acolB;
 
 //Functions
 void init(void);
 void display(void);
 void reshape(int w, int h);
+void setColours();
 vec3 findEndPoint(vec3 point, float offset);
 vec3 findMidPoints(vec3 start, vec3 end, float offset);
 vec3 findMidXPoints(vec3 start, vec3 end, float offset);
@@ -56,6 +63,18 @@ void drawFilledCircle(GLfloat x, GLfloat y, GLfloat radius);	/* https://gist.git
 
 //Main functions
 int main(int argc, char** argv) {
+	//colours set up
+	setColours();
+	bgcolR = colours[1].background.x;
+	bgcolG = colours[1].background.y;
+	bgcolB = colours[1].background.z;
+	mcolR = colours[1].main.x;
+	mcolG = colours[1].main.y;
+	mcolB = colours[1].main.z;
+	acolR = colours[1].accent.x;
+	acolG = colours[1].accent.y;
+	acolB = colours[1].accent.z;
+
 	pattern = 3;
 	
 	rows = 5;
@@ -82,8 +101,30 @@ int main(int argc, char** argv) {
 	return 0;
 }
 
+void setColours() {
+	colour reds;
+	reds.main = vec3(0.45490, 0.08235, 0.11373);
+	reds.accent = vec3(0.94510, 0.65882, 0.70196);
+	reds.background = vec3(0.83529, 0.30196, 0.48235);
+
+	colour blueYellow;
+	blueYellow.main = vec3(0.03137, 0.21569, 0.45882);
+	blueYellow.accent = vec3(0.50980, 0.61176, 0.74118);
+	blueYellow.background = vec3(0.84314, 0.65490, 0.09412);
+
+	colour greens;
+	greens.main = vec3(0.15294, 0.25490, 0.10196);
+	greens.accent = vec3(0.72941, 0.85098, 0.69020);
+	greens.background = vec3(0.85098, 0.85098, 0.95686);
+
+	colours.push_back(reds);			//0
+	colours.push_back(blueYellow);		//1
+	colours.push_back(greens);			//2
+}
+
 void init(void) {
-	glClearColor(0.0, 0.27, 0.51, 0.0);
+	//glClearColor(0.0, 0.27, 0.51, 0.0);
+	glClearColor(bgcolR, bgcolG, bgcolB, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//glShadeModel(GL_FLAT);
@@ -151,7 +192,7 @@ void display(void) {
 			//scale to become smaller
 			glScaled(scaleX, scaleY, 1.0);
 			//color the lines
-			glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
+			//glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
 			megamendung(ty);
 			glPopMatrix();
 		}
@@ -232,67 +273,6 @@ void display(void) {
 		//	}
 		//	cout << endl;
 		//	colCount++;
-		//}
-
-		/* megamendung test 1 */
-		//to random: iterations, position, scale, rotation, color
-
-		//int x2, y2;
-		//int cloudN = 0;
-		//int k = edge / 4;
-		//int col = 0;
-		//int row, ty;
-		//vec3 color;				//randomize this
-
-		////regular tiles
-		//for (int i = -edge; i <= edge; i++) {
-		//	row = 0;
-		//	float scaleX = k/3;
-		//	float scaleY = k/3;
-		//	x2 = i + k;
-		//	for (int j = -edge; j <= edge; j++) {
-		//		y2 = j + k;
-		//		cloudN++;
-		//		if (cloudN % 2 == 0) {
-		//			scaleX *= -1.0;
-		//			//scaleY = -1.0;
-		//		}
-		//		else {
-		//			scaleX *= 1.0;
-		//			//scaleY = 1.0;
-		//		}
-
-		//		if (col % 2 > 0) {
-		//			y2 -= k;	//different y position for each row
-		//			color = vec3(0.0, 1.0, 0.0);
-		//			//ty = 1;
-		//		}
-		//		else {
-		//			color = vec3(1.0, 1.0, 0.0);
-		//			//ty = 2;
-		//		}
-
-		//		if (row % 2 == 0) ty = 1;
-		//		else if (row % 2 > 0) ty = 2;
-
-		//		glPushMatrix();
-		//		//for vertical patterns
-		//		glRotated(0.0, 0.0, 0.0, 1.0);
-		//		//move to new positions
-		//		glTranslated((GLdouble)x2, (GLdouble)y2, 0.0);
-		//		//scale to become smaller
-		//		glScaled((GLdouble)scaleX, (GLdouble)scaleY, 1.0);
-		//		//color the lines
-		//		glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
-		//		drawCloud(ty);
-		//		glPopMatrix();
-
-		//		j += k * 2;
-		//		scaleY *= -1.0;
-		//		row++;
-		//	}
-		//	i += k * 3;
-		//	col++;
 		//}
 	}
 	else if (pattern == 2) {
@@ -969,13 +949,15 @@ void truntum(int type) {
 
 	radius = 0.3;
 
+	glColor3d(mcolR, mcolG, mcolB);
 	if (type == 0) {
 		drawFilledCircle(centre.x, centre.y, radius);
-		//glColor3d(1.0, 1.0, 1.0);
+		glColor3d(acolR, acolG, acolB);
 		drawFlowers();
 	}
 	else if (type == 1) {
 		GLfloat circDist = 1.2;
+		glColor3d(acolR, acolG, acolB);
 		drawFilledCircle(centre.x, centre.y, radius);
 		drawFilledCircle(centre.x + circDist, centre.y + circDist, radius - 0.2);
 		drawFilledCircle(centre.x + circDist, centre.y - circDist, radius - 0.2);

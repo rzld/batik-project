@@ -42,6 +42,7 @@ double edge;
 GLfloat bgcolR, bgcolG, bgcolB;
 GLfloat mcolR, mcolG, mcolB;
 GLfloat acolR, acolG, acolB;
+int clrIndex;
 
 //Functions
 void init(void);
@@ -63,36 +64,44 @@ void drawFilledCircle(GLfloat x, GLfloat y, GLfloat radius);	/* https://gist.git
 
 //Main functions
 int main(int argc, char** argv) {
-	//colours set up
-	setColours();
-	bgcolR = colours[1].background.x;
-	bgcolG = colours[1].background.y;
-	bgcolB = colours[1].background.z;
-	mcolR = colours[1].main.x;
-	mcolG = colours[1].main.y;
-	mcolB = colours[1].main.z;
-	acolR = colours[1].accent.x;
-	acolG = colours[1].accent.y;
-	acolB = colours[1].accent.z;
+	//choose a pattern
+	cout << "Choose pattern:" << endl;
+	cout << "1. Megamendung / clouds" << endl;
+	cout << "2. Kawung / leaves" << endl;
+	cout << "3. Truntum / flowers" << endl;
+	cout << "Enter here: ";
+	cin >> pattern;
+	cout << endl;
 
-	pattern = 3;
+	//choose colour palette
+	cout << "Choose colour palette:" << endl;
+	cout << "1. Red" << endl;
+	cout << "2. Blue & Yellow" << endl;
+	cout << "3. Green" << endl;
+	cout << "Enter here: ";
+	cin >> clrIndex;
+	setColours();
+
+	edge = 30.0;
+
+	srand(time(NULL));
+	/*tmRandomX = rand() % (int)edge + 1;
+	tmRandomY = rand() % (int)edge + 1;
+	cout << tmRandomX << " " << tmRandomY << endl;*/
+
+	//colours set up
+	//clrIndex = 1;
 	
 	rows = 5;
 	cols = 4;
-	edge = 30.0;
 
 	thueMorseAlgo(edge + 10.0, edge + 10.0);
-
-	srand(time(NULL));
-	tmRandomX = rand() % (int)edge + 1;
-	tmRandomY = rand() % (int)edge + 1;
-	cout << tmRandomX << " " << tmRandomY << endl;
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize(500, 500);                    // window size
 	glutInitWindowPosition(100, 100);                // distance from the top-left screen
-	glutCreateWindow("Test");    // message displayed on top bar window
+	glutCreateWindow("Batik");    // message displayed on top bar window
 	//init();
 	glutDisplayFunc(display);
 	//glutReshapeFunc(reshape);
@@ -102,6 +111,8 @@ int main(int argc, char** argv) {
 }
 
 void setColours() {
+	clrIndex--;
+
 	colour reds;
 	reds.main = vec3(0.45490, 0.08235, 0.11373);
 	reds.accent = vec3(0.94510, 0.65882, 0.70196);
@@ -120,6 +131,16 @@ void setColours() {
 	colours.push_back(reds);			//0
 	colours.push_back(blueYellow);		//1
 	colours.push_back(greens);			//2
+
+	bgcolR = colours[clrIndex].background.x;
+	bgcolG = colours[clrIndex].background.y;
+	bgcolB = colours[clrIndex].background.z;
+	mcolR = colours[clrIndex].main.x;
+	mcolG = colours[clrIndex].main.y;
+	mcolB = colours[clrIndex].main.z;
+	acolR = colours[clrIndex].accent.x;
+	acolG = colours[clrIndex].accent.y;
+	acolB = colours[clrIndex].accent.z;
 }
 
 void init(void) {
@@ -160,8 +181,7 @@ void display(void) {
 		GLdouble randy = edge - (rand() % 10 + 1);*/
 		//cout << randx << " " << randy << endl;
 
-		GLdouble scaleX = 2.0;
-		GLdouble scaleY = 2.0;
+		GLdouble scaleX, scaleY;
 
 		int ty;
 
@@ -178,11 +198,14 @@ void display(void) {
 		//glPopMatrix();
 
 		for (int i = 0; i < 10; i++) {
-			GLdouble randx = -edge + (rand() % ((int)edge * 2));
-			GLdouble randy = edge - (rand() % ((int)edge * 2));
-			cout << randx << " " << randy << endl;
+			GLdouble randx = -edge + (rand() % ((int)edge * 2)) + 5.0;
+			GLdouble randy = edge - (rand() % ((int)edge * 2)) + 5.0;
+			//cout << randx << " " << randy << endl;
 
 			ty = rand() % 2;
+			
+			scaleX = (rand() % 3) + 1.0;
+			scaleY = scaleX;
 
 			glPushMatrix();
 			//for vertical patterns
@@ -196,84 +219,6 @@ void display(void) {
 			megamendung(ty);
 			glPopMatrix();
 		}
-
-		//for (int i = 0; i < edge+10; i++) {
-		//	for (int j = 0; j < edge + 10; j++) {
-		//		int newx = randx + rand() % 20;
-		//		cout << newx << " " << randy << endl;
-
-		//		glPushMatrix();
-		//		//for vertical patterns
-		//		glRotated(0.0, 0.0, 0.0, 1.0);
-		//		//move to new positions
-		//		glTranslated(newx, randy, 0.0);
-		//		//scale to become smaller
-		//		glScaled(scaleX, scaleY, 1.0);
-		//		//color the lines
-		//		glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
-		//		megamendung(ty);
-		//		glPopMatrix();
-
-		//		//int yy = rand() % 20 + 10;
-		//		randy += cloudMinY * scaleY;
-		//		j -= cloudMinY * scaleY;
-		//	}
-		//	//int xx = rand() % 20;
-		//	i += cloudMaxX * scaleX;
-		//	randx += cloudMaxX * scaleX;
-		//}
-
-		/* megamendung test 2 */
-		//int nextRow = (edge * 2) / (rows - 1);
-		//int nextCol = (edge * 2) / (cols - 1);
-		//int rowCount, colCount, x3, y3, ty;
-		//vec3 color(1.0, 1.0, 1.0);
-		//float scaleX, scaleY;
-		////cout << nextRow << endl << nextCol << endl;
-
-		//iterations = 4;			//randomize this
-		//colCount = 0;
-		//for (int i = 0; i < cols; i++) {
-		//	rowCount = 0;
-		//	x3 = -edge + (i * nextCol);			//not random
-
-		//	scaleX = 2.0;	//random
-		//	scaleY = 2.0;	//random
-		//	for (int j = 0; j < rows; j++) {
-		//		//random position
-		//		/*int ii = rand() % ((int)edge * 2) + 1;
-		//		int jj = rand() % ((int)edge * 2) + 1;
-		//		x3 = -edge + ii;
-		//		y3 = -edge + jj;
-		//		cout << ii << " " << jj << endl;*/
-
-		//		y3 = -edge + (j * nextRow);		//not random
-
-		//		if (thueMorse[i + tmRandomX][j + tmRandomY] == 0) {
-		//			ty = 2;
-		//		}
-		//		else if (thueMorse[i + tmRandomX][j + tmRandomY] == 1) {
-		//			ty = 1;
-		//		}
-		//		cout << thueMorse[i + tmRandomX][j + tmRandomY] << " ";
-
-		//		//cout << x3 << " " << y3 << endl;
-		//		glPushMatrix();
-		//		//for vertical patterns
-		//		glRotated(0.0, 0.0, 0.0, 1.0);
-		//		//move to new positions
-		//		glTranslated((GLdouble)x3, (GLdouble)y3, 0.0);
-		//		//scale to become smaller
-		//		glScaled((GLdouble)scaleX, (GLdouble)scaleY, 1.0);
-		//		//color the lines
-		//		glColor3d((GLdouble)color.x, (GLdouble)color.y, (GLdouble)color.z);
-		//		megamendung(ty);
-		//		glPopMatrix();
-		//		rowCount++;
-		//	}
-		//	cout << endl;
-		//	colCount++;
-		//}
 	}
 	else if (pattern == 2) {
 		/* kawung test */
@@ -792,7 +737,7 @@ void megamendung(int type) {
 	}
 
 	//coloured cloud
-	glColor3d(0.0, 0.5, 0.3);
+	glColor3d(mcolR, mcolG, mcolB);
 	glBegin(GL_POLYGON);
 	for (int i = 0; i < mendungPts.size(); i++) {
 		glVertex2d(mendungPts[i].x, mendungPts[i].y);
@@ -800,8 +745,8 @@ void megamendung(int type) {
 	glEnd();
 
 	//cloud outline
-	glColor3d(0.0, 0.3, 0.5);
-	glLineWidth(2.0);
+	glColor3d(acolR, acolG, acolB);
+	glLineWidth(3.0);
 	glBegin(GL_LINE_STRIP);
 	for (int i = 0; i < mendungPts.size(); i++) {
 		glVertex2d(mendungPts[i].x, mendungPts[i].y);
@@ -842,8 +787,8 @@ void kawung() {
 	maxSize = vec3(kawungSize, kawungSize, 0.0);
 
 	//rectangle filled
-	glColor3d(0.0, 0.3, 0.1);
-	glRectd(kawungSize, kawungSize, -kawungSize, -kawungSize);
+	/*glColor3d(0.0, 0.3, 0.1);
+	glRectd(kawungSize, kawungSize, -kawungSize, -kawungSize);*/
 
 	//rectangle border
 	/*glColor3d(1.0, 1.0, 1.0);
@@ -859,8 +804,8 @@ void kawung() {
 	//kawungPts = drawTeardrop(centre, maxSize, 0.0);
 	//cout << kawungPts.size() << endl;
 
-	//kawung with colour
-	glColor3d(0.3, 0.0, 0.1);	//different colour between iterations
+	//kawung fill
+	glColor3d(mcolR, mcolG, mcolB);	//different colour between iterations
 	angle = 0.0;
 	for (int j = 0; j < 4; j++) {
 		glRotated(angle, 0.0, 0.0, 1.0);
@@ -871,7 +816,7 @@ void kawung() {
 	}
 
 	//kawung outline
-	glColor3d(0.5, 0.0, 0.3);	//different colour between iterations
+	glColor3d(acolR, acolG, acolB);	//different colour between iterations
 	glLineWidth(2.0);
 	angle = 0.0;
 	for (int j = 0; j < 4; j++) {
@@ -883,7 +828,7 @@ void kawung() {
 	}
 
 	//big circles in the middle
-	glColor3d(0.5, 0.0, 0.3);
+	glColor3d(acolR, acolG, acolB);
 	glLineWidth(2.0);
 	drawFilledCircle(0.0, 0.0, 0.2);
 	drawFilledCircle(-1.0, -1.0, 0.2);
@@ -905,7 +850,7 @@ void kawung() {
 
 	//rectangle ornaments
 	//actually draws a triangle, but will be connected by another triangle.
-	glColor3d(0.5, 0.5, 0.0);
+	glColor3d(mcolR, mcolG, mcolB);
 	glLineWidth(2.0);
 	GLdouble offset = 0.2;
 	GLdouble rx = 0.0;
